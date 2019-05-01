@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
 import datetime 
 from django.core import validators
 from django.contrib.postgres.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=30, unique=True,
         validators=[
@@ -21,9 +21,13 @@ class User(AbstractBaseUser):
         })
     public_key = models.CharField(max_length=64, unique=True)
     date_joined = models.DateField(default=datetime.date.today)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True) #To be changed
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email','public_key']
+    objects = UserManager()
 
 
 class Student (User):
