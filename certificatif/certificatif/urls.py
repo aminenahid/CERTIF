@@ -18,22 +18,10 @@ from django.urls import path
 from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
 from certificatif.models import User
-from certificatif.views import login, logout
-
-# Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email', 'is_staff')
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+from certificatif.views import *
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
 
 urlpatterns = [
 
@@ -42,6 +30,7 @@ urlpatterns = [
 
 	url('api/login', login),
 	url('api/logout', logout),
+    url('api/university', GetUniversityShortName.as_view()),
 
     path('admin/', admin.site.urls)
 ]

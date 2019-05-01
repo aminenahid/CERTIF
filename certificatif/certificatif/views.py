@@ -1,7 +1,9 @@
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, serializers, viewsets, permissions
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from django.http import JsonResponse
 from django.contrib.auth import authenticate
 from certificatif.models import *
 from certificatif.serializers import *
@@ -36,3 +38,10 @@ def login(request):
 def logout(request):
 	request.user.auth_token.delete()
 	return Response(status=status.HTTP_200_OK)
+
+class GetUniversityShortName(APIView):
+	permission_classes = (permissions.IsAuthenticated, )
+	def get(self, request):
+		university = University.objects.get(pk=request.user.id)
+		serializedUniversity = UniversitySerializer(university)
+		return Response(serializedUniversity.data)

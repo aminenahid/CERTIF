@@ -4,6 +4,8 @@ from certificatif.models import *
 class StudentSerializer(serializers.Serializer):
     pass
 
-class UniversitySerializer(serializers.Serializer):
-    short_name = serializers.CharField(max_length=100)
+class UniversitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model= University
+        fields = ('short_name', )
     
