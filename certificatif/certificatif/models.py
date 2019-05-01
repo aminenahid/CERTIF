@@ -19,7 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         error_messages={
             'unique': _("A user with that username already exists."),
         })
-    public_key = models.CharField(max_length=64, unique=True)
+    public_key = models.CharField(max_length=128, unique=True)
     date_joined = models.DateField(default=datetime.date.today)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -31,14 +31,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Student (User):
-    given_names = models.CharField(max_length=100)
+    given_names = models.CharField(max_length=100,
+        help_text=_('Please use a comma as separator between your given names'))
     last_name = models.CharField(max_length=100)
 
     def get_full_name(self):
         return "%s %s" % (self.given_names, self.last_name)
     
     def get_short_name(self):
-        return "%s" % (self.given_names[:self.given_names.find(' ')])
+        return "%s" % (self.given_names[:self.given_names.find(',')])
 
 
 class University (User):
@@ -64,6 +65,17 @@ class DiplomaGroup (models.Model):
 class Diploma (models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     group = models.ForeignKey(DiplomaGroup, on_delete=models.CASCADE)
+    STATUS_CHOICES = (
+        ('AT', 'En attente de validation diplômé'),
+        ('V', 'Validé'),
+        ('DC', 'Demande de rectification'),
+        ('R', 'Rejeté'),
+    )
+    status = models.CharField(
+        max_length=3,
+        choices=STATUS_CHOICES,
+        default='AT',
+    )
     diploma_file = JSONField()
 
     def get_diploma(self):
