@@ -63,7 +63,7 @@ class University (User):
 
 class DiplomaGroup (models.Model):
     university = models.ForeignKey(University, on_delete=models.CASCADE)
-    transaction = models.CharField(max_length=64)
+    transaction = models.CharField(null=True, default=None, max_length=64)
     title = models.CharField(max_length=100)
     issue_date = models.DateField(default=datetime.date.today)
 
