@@ -30,6 +30,7 @@ urlpatterns = [
 
 	url('api/login', login),
 	url('api/logout', logout),
+    url('api/signup', signup),
     url('api/university', get_university_short_name),
 
     path('admin/', admin.site.urls)
