@@ -55,8 +55,9 @@ class University (User):
         return "%s" % (self.short_name)
 
     def authorisation_manage(self):
-        if self.autorisation_expiry_date < datetime.date.today:
+        if self.autorisation_expiry_date < datetime.date.today():
             self.is_authorised = False
+            self.save()
         return self.is_authorised
 
 

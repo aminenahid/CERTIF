@@ -1,5 +1,6 @@
 from rest_framework import routers, serializers, viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -53,4 +54,11 @@ def issue_diploma(request):
 	issuer_university = University.objects.get(pk=request.user.id)
 	if not issuer_university.authorisation_manage():
 		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
+	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
+	group = DiplomaGroup(university=issuer_university, transaction='none', title=request.schema.badge.name)
+	group.save()
+	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.schema.recipient.identity), diploma_file=request.schema)
+	temp_diploma.save()
+	#Blockcert issue (+ UPDATE TRANSACTION ID)
 	
+	#Delete diploma from DB if refused
