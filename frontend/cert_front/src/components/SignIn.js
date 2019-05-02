@@ -1,7 +1,10 @@
-import React, {Component} from 'react';
+import React, {Component} from 'react'
+import  { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {Grid, TextField, Typography, Paper, Button} from '@material-ui/core';
+import axios from 'axios'
+import Navbar from './Navbar'
 
 const styles = theme => ({
     root: {
@@ -29,17 +32,40 @@ const styles = theme => ({
 
 class SignIn extends Component {
     state={
+
         username: "",
-        password: ""
+        password: "",
+        redirect :"",
+        connected: false
+        
     }
     handleChange = name => event => {
         this.setState({ [name] : event.target.value });
     };
+    login = ()=> {
+        axios.post('http://localhost:8000/api/login', {'username' :this.state.username,'password':this.state.password})
+        .then(res => {
+            sessionStorage.setItem('token', res.data.token);
+            this.setState({"connected":true})
+            axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+localStorage.getItem('token')}})
+            .then( res => {
+                sessionStorage.setItem('short_name', res.data.short_name);
+                this.setState({"redirect" :  <Redirect to="/" /> })
+            }).catch(e => {
+                alert("connexion disponnible uniquement pour les universités actuellement")
+            })
+        }).catch(e => {
+            alert("erreur, nom de compte ou mdp incorrect")
+        })
+
+    }
 
     render(){
         const {classes} = this.props;
         return (
+           
             <div className="signInComponent">
+            <Navbar connected={this.state.connected} />
                 <Grid container className="classes.root" justify="center">
                     <Grid item>
                         <Paper className={ classes.mainPaper }>
@@ -59,12 +85,13 @@ class SignIn extends Component {
                                     <Button color="primary">Mot de passe oublié ?</Button>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Button variant="contained" color="primary">Connexion</Button>
+                                    <Button variant="contained" color="primary" onClick={this.login}>Connexion</Button>
                                 </Grid>
                             </Grid>
                         </Paper>
                     </Grid>
                 </Grid>
+                {this.state.redirect}
             </div>            
         )
     }

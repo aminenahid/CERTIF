@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {Grid, Typography, Paper,Button, TextField} from '@material-ui/core';
 import Dropzone from './Dropzone'
+import Navbar from './Navbar'
 
 const styles = theme => ({
   root: {
@@ -41,6 +42,7 @@ class Publish extends Component {
   }
   return (
     <div className={classes.root}>
+    <Navbar connected={sessionStorage.getItem('token')!==null} />
       <Grid container justify="center" spacing={24}>
         <Grid item>
           <br/>

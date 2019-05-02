@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {Grid, Typography, Paper,Button} from '@material-ui/core';
 import Dropzone from './Dropzone'
 import Pastille from './Pastille'
+import Navbar from './Navbar'
 
 const styles = theme => ({
   root: {
@@ -24,8 +25,13 @@ class Verify extends Component {
   fileHandler = (uploadedFile)=>{
     this.setState({'file':uploadedFile,status:'fileNotVerif'})
   }
+  verify= () => {
+   
 
+    }
+  
   render(){
+
   const { classes } = this.props;
   let dropzone;
   if(!this.state.file){
@@ -35,13 +41,14 @@ class Verify extends Component {
   }
   return (
     <div className={classes.root}>
-      <Grid container direction="row" justify="center" alignItem="center" spacing={24}>
+    <Navbar connected={sessionStorage.getItem('token')!==null} />
+      <Grid container direction="row" justify="center" alignItems ="center">
         <Grid item xs={12}>
           <br/>
             <Typography variant="h3" color="primary" className={classes.h3}>CONSULTER ET AUTHENTIFIER UN DIPLOME</Typography>
           <br/>
         </Grid>
-        <Grid item xs={9} >
+        <Grid item xs={11} md={9} >
           {dropzone}
           <br/>
           <Grid container justify="flex-end">

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Navbar from './Navbar'
 
 
 class Home extends Component {
@@ -6,7 +7,7 @@ class Home extends Component {
 
         return (
             <div className="homeComponent">
-              
+                <Navbar connected={sessionStorage.getItem('token')!==null} />            
             </div>            
         )
     }
