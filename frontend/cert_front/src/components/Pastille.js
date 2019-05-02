@@ -39,7 +39,8 @@ const styles = theme => ({
       fontColor: '#ffffff' 
     },
     body2:{
-        textAlign: 'center'
+        textAlign: 'center',
+        padding : 8
     }
   
   });

@@ -14,7 +14,6 @@ const styles = theme => ({
   });
 function MyDropzone(props) {
     const classes = props.classes;
-    console.log(props)
     const onDrop = useCallback(acceptedFiles => {
     const reader = new FileReader()
 
@@ -24,7 +23,6 @@ function MyDropzone(props) {
       // Do whatever you want with the file contents
       const binaryStr = reader.result
       props.action(binaryStr)
-      console.log(binaryStr)
     }
 
     acceptedFiles.forEach(file => reader.readAsBinaryString(file))
