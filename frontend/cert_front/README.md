@@ -1,12 +1,15 @@
 This project is was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 This project is using meterial-ui
 
-# tuto pour la premiere démo :)
+## tuto pour la premiere démo :)
 to start the project in dev mode :
+
 cd frontend/cert_front
 
 install yarn (apt install yarn)
+
 yarn add -r ./package.json
+
 yarn start
 
 server will run on localhost:3000
