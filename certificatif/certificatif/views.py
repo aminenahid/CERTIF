@@ -10,7 +10,8 @@ from certificatif.serializers import *
 from rest_framework.status import (
 	HTTP_404_NOT_FOUND,
 	HTTP_400_BAD_REQUEST,
-	HTTP_200_OK
+	HTTP_200_OK,
+	HTTP_403_FORBIDDEN
 )
 
 @api_view(["POST"])
@@ -45,3 +46,11 @@ def get_university_short_name(request):
 	university = University.objects.get(pk=request.user.id)
 	serializedUniversity = UniversitySerializer(university)
 	return Response(serializedUniversity.data)
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def issue_diploma(request):
+	issuer_university = University.objects.get(pk=request.user.id)
+	if not issuer_university.authorisation_manage():
+		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
+	
