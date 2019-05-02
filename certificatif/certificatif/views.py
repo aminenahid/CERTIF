@@ -15,6 +15,8 @@ from rest_framework.status import (
 	HTTP_403_FORBIDDEN
 )
 
+import random
+
 @api_view(["POST"])
 def login(request):
 	username = request.data.get("username")
@@ -62,3 +64,23 @@ def issue_diploma(request):
 	#Blockcert issue (+ UPDATE TRANSACTION ID)
 	
 	#Delete diploma from DB if refused
+
+	
+@api_view(["POST"])
+def verify_certificate(request):
+	diploma = request.data.get("diploma")
+
+	if diploma is None:
+		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
+
+	public_key = diploma["public_key"] # To modify
+
+	univ = None
+	try:
+		univ = University.objects.get(public_key=public_key)
+	except:
+		return Response({'is_valid': False, 'error': "Invalid university"}, status=HTTP_404_NOT_FOUND)
+
+	# Call Louis' function and check return value
+
+	return Response({'is_valid': True, 'university': univ.short_name }, status=HTTP_200_OK)
