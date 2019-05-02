@@ -32,10 +32,10 @@ class Publish extends Component {
   handleChange = name => event => {
     this.setState({ [name] : event.target.value });
   };
-  verify= () => {
+  publish= () => {
     axios({
       'url':'http://localhost:8000/api/issue', 
-      'data':{'diploma' : this.state.file, 'private_key': this.state.privateKey},
+      'data':{'diploma' : JSON.parse(this.state.file), 'private_key': this.state.privateKey},
       'method':'post',
       'headers': {"Authorization" : "token "+localStorage.getItem('token')}
     }).then(res => {
@@ -47,8 +47,7 @@ class Publish extends Component {
       }
       
     }).catch(e => {
-        alert("erreur, serveur injoignable ou fichier incorrect")
-        this.setState({"file":null,status:"noFile"})
+      this.setState({"status":"notOk"});
     })
 
 
@@ -69,9 +68,9 @@ class Publish extends Component {
   }
   let confirmZone;
   if(this.state.status==="Ok"){
-    confirmZone=<Typography variant="body2">Votre diplome a bien été enregistré</Typography>
+    confirmZone=<Typography variant="body1">Votre diplome a bien été enregistré</Typography>
   }else if(this.state.status==="notOk"){
-    confirmZone=<Typography variant="body2">Votre diplome n'a pas été enregistré (clef privée incorrecte)</Typography>
+    confirmZone=<Typography variant="body1">Votre diplome n'a pas été enregistré (clef privée incorrecte)</Typography>
   }else{
     confirmZone=<p></p>
   }
@@ -100,7 +99,7 @@ class Publish extends Component {
         <Grid item xs={9}>
           <Grid container direction="row" justify="flex-end" spacing={24}>
             <Grid item>
-              <Button variant="contained" color="primary" disabled={this.state.status==="noFile" || this.state.privateKey===""} onClick={()=>{this.setState({'file':null,'status':'noFile'})}}>Enregistrer</Button>
+              <Button variant="contained" color="primary" disabled={this.state.status==="noFile" || this.state.privateKey===""} onClick={this.publish}>Enregistrer</Button>
             </Grid>
             <Grid item>
               <Button variant="contained" color="primary" disabled={this.state.status==="noFile"} onClick={()=>{this.setState({'file':null,'status':'noFile'})}}>Changer fichier</Button>

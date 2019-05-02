@@ -26,19 +26,18 @@ class Verify extends Component {
   fileHandler = (uploadedFile)=>{
     this.setState({'file':uploadedFile,status:'fileNotVerif'})
   }
-  verify= () => {
-    axios.post('http://localhost:8000/api/verify_certificate', this.state.file)
+  verifyFile = () => {
+    axios.post('http://localhost:8000/api/verify_certificate', {'diploma' : JSON.parse(this.state.file)})
     .then(res => {
         let response = res.data;
-        if(response.is_valid==true){
+        if(response.is_valid===true){
           this.setState({"status":"Ok"});
         }else{
           this.setState({"status":"notOk"});
         }
        
     }).catch(e => {
-        alert("erreur, serveur injoignable ou fichier incorrect")
-        this.setState({"file":null,status:"noFile"})
+        this.setState({status:"notOk"})
     })
 
 
@@ -82,7 +81,7 @@ class Verify extends Component {
             <Grid item>
               <Pastille status={this.state.status} />
             </Grid>
-            <Grid item><Button variant="contained" onClick={this.verify} color="primary" disabled={(this.state.status==="Ok"||this.state.status==="notOk"||this.state.status==="noFile")}>Verifier</Button></Grid>
+            <Grid item><Button variant="contained" onClick={this.verifyFile} color="primary" disabled={(this.state.status==="Ok"||this.state.status==="notOk"||this.state.status==="noFile")}>Verifier</Button></Grid>
             
           </Grid>
         </Grid>
