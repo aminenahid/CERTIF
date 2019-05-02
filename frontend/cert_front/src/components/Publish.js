@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {Grid, Typography, Paper,Button, TextField} from '@material-ui/core';
 import Dropzone from './Dropzone'
-import Pastille from './Pastille'
 
 const styles = theme => ({
   root: {
@@ -30,13 +29,11 @@ class Publish extends Component {
   }
   handleChange = name => event => {
     this.setState({ [name] : event.target.value });
-    console.log(this.state.privateKey)
   };
 
   render(){
   const { classes } = this.props;
   let dropzone;
-  let keyzone;
   if(!this.state.file){
     dropzone=<Dropzone action={this.fileHandler} />
   } else {
