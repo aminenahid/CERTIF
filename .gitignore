@@ -1,4 +1,20 @@
 
 .vs/
 certificatif/certificatif/__pycache__/
+
+
 certificatif/certificatif/migrations/
+venv/
+frontend/cert_front/node_modules
+frontend/cert_front/.pnp
+frontend/cert_front/.pnp.js
+frontend/cert_front/coverage
+frontend/cert_front/build
+frontend/cert_front/.DS_Store
+frontend/cert_front/.env.local
+frontend/cert_front/.env.development.local
+frontend/cert_front/.env.test.local
+frontend/cert_front/.env.production.local
+frontend/cert_front/npm-debug.log*
+frontend/cert_front/yarn-debug*
+frontend/cert_front/yarn-error.log*
