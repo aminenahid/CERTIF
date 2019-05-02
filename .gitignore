@@ -18,3 +18,4 @@ frontend/cert_front/.env.production.local
 frontend/cert_front/npm-debug.log*
 frontend/cert_front/yarn-debug*
 frontend/cert_front/yarn-error.log*
+frontend/cert_front/yarn.lock
