@@ -16,7 +16,7 @@ from rest_framework.status import (
 	HTTP_200_OK,
 	HTTP_403_FORBIDDEN
 )
-
+import json
 import random
 
 @api_view(["POST"])
@@ -83,7 +83,7 @@ def signup(request):
 	'''
 	return Response({'action': True}, status=HTTP_200_OK)
 
-
+#This has not been tested
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 @transaction.atomic
@@ -94,7 +94,7 @@ def issue_diploma(request):
 		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
 
 	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
-	group = DiplomaGroup(university=issuer_university, transaction='none', title=request.diploma__badge__name)
+	group = DiplomaGroup(university=issuer_university, title=request.diploma__badge__name)
 	group.save()
 	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.diploma__recipient__identity), diploma_file=request.diploma)
 	temp_diploma.save()
@@ -104,16 +104,17 @@ def issue_diploma(request):
 	is_validated, transaction_id, uploaded_diploma = issueToBlockChain(request.user.public_key, private_key, str(temp_diploma.diploma_file))
 	if is_validated:
 		group.transaction = transaction_id
-		temp_diploma.diploma_file = uploaded_diploma
+		temp_diploma.diploma_file = json.loads(uploaded_diploma)
 		group.save()
 		temp_diploma.save()
+		return Response({'action': True, 'diploma':json.loads(uploaded_diploma)}, status=HTTP_200_OK)
 
-	elif:
+	else:
 		#Rollback the transaction if Blockcerts issue has failed
 		transaction.rollback()
 		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
 
-
+#This has not been tested neither
 @api_view(["POST"])
 def verify_certificate(request):
 	diploma = request.data.get("diploma")
@@ -121,7 +122,7 @@ def verify_certificate(request):
 	if diploma is None:
 		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
 
-	public_key = diploma["public_key"] # To modify
+	public_key = diploma["public_key"] # To modify, Louis knew it, will know it and will tell us
 
 	univ = None
 	try:
