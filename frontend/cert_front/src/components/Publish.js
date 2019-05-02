@@ -59,7 +59,13 @@ class Publish extends Component {
   if(!this.state.file){
     dropzone=<Dropzone action={this.fileHandler} />
   } else {
-    dropzone=<Paper className={classes.paper}><Typography variant="body1">{this.state.file}</Typography></Paper>
+    let theFile=JSON.parse(this.state.file);
+    theFile.image=null;
+    theFile.badge.image=null
+    theFile.badge.issuer.image=null
+    theFile.badge.signatureLines[0].image=null
+    console.log(theFile)
+    dropzone=<Paper className={classes.paper}><Typography variant="body1">{JSON.stringify(theFile)}</Typography></Paper>
   }
   let confirmZone;
   if(this.state.status==="Ok"){
