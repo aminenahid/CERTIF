@@ -1,5 +1,6 @@
 from rest_framework import routers, serializers, viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -10,8 +11,11 @@ from certificatif.serializers import *
 from rest_framework.status import (
 	HTTP_404_NOT_FOUND,
 	HTTP_400_BAD_REQUEST,
-	HTTP_200_OK
+	HTTP_200_OK,
+	HTTP_403_FORBIDDEN
 )
+
+import random
 
 @api_view(["POST"])
 def login(request):
@@ -46,6 +50,7 @@ def get_university_short_name(request):
 	serializedUniversity = UniversitySerializer(university)
 	return Response(serializedUniversity.data)
 
+
 @api_view(["POST"])
 def signup(request):
 	email = request.data.get("email")
@@ -69,3 +74,39 @@ def signup(request):
 	student = Student (username=username, given_names=surname, email=email, password=password, last_name=last_name , public_key=public_key )
 	student.save()
 	return Response({'action': True}, status=HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def issue_diploma(request):
+	issuer_university = University.objects.get(pk=request.user.id)
+	if not issuer_university.authorisation_manage():
+		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
+	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
+	group = DiplomaGroup(university=issuer_university, transaction='none', title=request.schema.badge.name)
+	group.save()
+	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.schema.recipient.identity), diploma_file=request.schema)
+	temp_diploma.save()
+	#Blockcert issue (+ UPDATE TRANSACTION ID)
+
+	#Delete diploma from DB if refused
+
+
+@api_view(["POST"])
+def verify_certificate(request):
+	diploma = request.data.get("diploma")
+
+	if diploma is None:
+		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
+
+	public_key = diploma["public_key"] # To modify
+
+	univ = None
+	try:
+		univ = University.objects.get(public_key=public_key)
+	except:
+		return Response({'is_valid': False, 'error': "Invalid university"}, status=HTTP_404_NOT_FOUND)
+
+	# Call Louis' function and check return value
+
+	return Response({'is_valid': True, 'university': univ.short_name }, status=HTTP_200_OK)

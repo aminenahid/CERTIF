@@ -54,6 +54,12 @@ class University (User):
     def get_short_name(self):
         return "%s" % (self.short_name)
 
+    def authorisation_manage(self):
+        if self.autorisation_expiry_date < datetime.date.today():
+            self.is_authorised = False
+            self.save()
+        return self.is_authorised
+
 
 class DiplomaGroup (models.Model):
     university = models.ForeignKey(University, on_delete=models.CASCADE)
