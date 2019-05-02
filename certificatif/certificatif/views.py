@@ -1,5 +1,5 @@
 from rest_framework import routers, serializers, viewsets, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -12,6 +12,8 @@ from rest_framework.status import (
 	HTTP_400_BAD_REQUEST,
 	HTTP_200_OK
 )
+
+import random
 
 @api_view(["POST"])
 def login(request):
@@ -39,9 +41,28 @@ def logout(request):
 	request.user.auth_token.delete()
 	return Response(status=status.HTTP_200_OK)
 
-class GetUniversityShortName(APIView):
-	permission_classes = (permissions.IsAuthenticated, )
-	def get(self, request):
-		university = University.objects.get(pk=request.user.id)
-		serializedUniversity = UniversitySerializer(university)
-		return Response(serializedUniversity.data)
+@api_view(["GET"])
+@permission_classes((permissions.IsAuthenticated, ))
+def get_university_short_name(request):
+	university = University.objects.get(pk=request.user.id)
+	serializedUniversity = UniversitySerializer(university)
+	return Response(serializedUniversity.data)
+
+@api_view(["POST"])
+def verify_certificate(request):
+	diploma = request.data.get("diploma")
+
+	if diploma is None:
+		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
+
+	public_key = diploma["public_key"] # To modify
+
+	univ = None
+	try:
+		univ = University.objects.get(public_key=public_key)
+	except:
+		return Response({'is_valid': False, 'error': "Invalid university"}, status=HTTP_404_NOT_FOUND)
+
+	# Call Louis' function and check return value
+
+	return Response({'is_valid': True, 'university': univ.short_name }, status=HTTP_200_OK)
