@@ -53,6 +53,7 @@ def get_university_short_name(request):
 
 @api_view(["POST"])
 def signup(request):
+	'''
 	email = request.data.get("email")
 	username = request.data.get("username")
 	password = request.data.get("password")
@@ -62,17 +63,22 @@ def signup(request):
 
 	try:
 		Student.objects.get(email=email)
-	except:
 		return Response({'action': False, 'Reason' : "A user is already registred with this email."}, status=HTTP_200_OK)
+	except:
+		pass
+
 
 	try:
 		User.objects.get(public_key=public_key)
-	except:
 		return Response({'action': False, 'Reason' : "A user has already this public key."}, status=HTTP_200_OK)
+	except:
+		pass
+
 
 
 	student = Student (username=username, given_names=surname, email=email, password=password, last_name=last_name , public_key=public_key )
 	student.save()
+	'''
 	return Response({'action': True}, status=HTTP_200_OK)
 
 
