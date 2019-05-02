@@ -47,10 +47,6 @@ def issueToBlockChain(pubKey, privKey, schema):
         print(error)
         return False, "", None
 
-    a=issueToBlockChain(,,)
-    a[0]
-    a[1]
-
 def verifyOnBlockChain(jsonContent, transaction_id=None):
     certificate_json=json.loads(jsonContent.decode('utf-8'))
     certificate_model = ccore.to_certificate_model(certificate_json=certificate_json,
