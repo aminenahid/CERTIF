@@ -6,16 +6,21 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
+from django.db import transaction
 from certificatif.models import *
 from certificatif.serializers import *
 from rest_framework.status import (
+	HTTP_401_UNAUTHORIZED,
 	HTTP_404_NOT_FOUND,
 	HTTP_400_BAD_REQUEST,
 	HTTP_200_OK,
 	HTTP_403_FORBIDDEN
 )
-
+import json
 import random
+import sys
+sys.path.insert(0, '../Blockcert_linker/')
+import UploadAndVerify as uav
 
 @api_view(["POST"])
 def login(request):
@@ -81,23 +86,38 @@ def signup(request):
 	'''
 	return Response({'action': True}, status=HTTP_200_OK)
 
-
+#This has not been tested
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
+@transaction.atomic
 def issue_diploma(request):
 	issuer_university = University.objects.get(pk=request.user.id)
+
 	if not issuer_university.authorisation_manage():
 		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
+
 	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
-	group = DiplomaGroup(university=issuer_university, transaction='none', title=request.schema.badge.name)
+	group = DiplomaGroup(university=issuer_university, title=request.diploma__badge__name)
 	group.save()
-	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.schema.recipient.identity), diploma_file=request.schema)
+	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.diploma__recipient__identity), diploma_file=request.diploma)
 	temp_diploma.save()
-	#Blockcert issue (+ UPDATE TRANSACTION ID)
 
-	#Delete diploma from DB if refused
+	#Blockcert issue and database update
+	#check the name of the private_key attribute
+	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, private_key, str(temp_diploma.diploma_file))
+	if is_validated:
+		group.transaction = transaction_id
+		temp_diploma.diploma_file = json.loads(uploaded_diploma)
+		group.save()
+		temp_diploma.save()
+		return Response({'action': True, 'diploma':json.loads(uploaded_diploma)}, status=HTTP_200_OK)
 
+	else:
+		#Rollback the transaction if Blockcerts issue has failed
+		transaction.rollback()
+		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
 
+#This has not been tested neither
 @api_view(["POST"])
 def verify_certificate(request):
 	diploma = request.data.get("diploma")
@@ -105,14 +125,14 @@ def verify_certificate(request):
 	if diploma is None:
 		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
 
-	public_key = diploma["public_key"] # To modify
+	univ_name = diploma["badge"]["issuer"]["name"] # FIXME as to work with public_key (Louis)
 
 	univ = None
 	try:
-		univ = University.objects.get(public_key=public_key)
-	except:
-		return Response({'is_valid': False, 'error': "Invalid university"}, status=HTTP_404_NOT_FOUND)
+		univ = University.objects.get(name=univ_name)
+	except Exception as error:
+		return Response({'is_valid': False, 'error': "Invalid university: "+str(error)}, status=HTTP_404_NOT_FOUND)
 
-	# Call Louis' function and check return value
-
-	return Response({'is_valid': True, 'university': univ.short_name }, status=HTTP_200_OK)
+	# Verify the diploma in the Blockchain
+	is_valid = uav.verifyOnBlockChain_v2(diploma)
+	return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
