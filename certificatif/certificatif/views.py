@@ -28,7 +28,7 @@ def login(request):
 	user = authenticate(username=username, password=password)
 	if not user:
 		return Response({'error': 'Invalid Credentials'}, status=HTTP_404_NOT_FOUND)
-	
+
 	is_univ=True
 	try:
 		University.objects.get(pk=user.id)
@@ -50,6 +50,32 @@ def get_university_short_name(request):
 	serializedUniversity = UniversitySerializer(university)
 	return Response(serializedUniversity.data)
 
+
+@api_view(["POST"])
+def signup(request):
+	email = request.data.get("email")
+	username = request.data.get("username")
+	password = request.data.get("password")
+	surname = request.data.get("surname")
+	last_name= request.data.get("last_name")
+	public_key= request.data.get("public_key")
+
+	try:
+		Student.objects.get(email=email)
+	except:
+		return Response({'action': False, 'Reason' : "A user is already registred with this email."}, status=HTTP_200_OK)
+
+	try:
+		User.objects.get(public_key=public_key)
+	except:
+		return Response({'action': False, 'Reason' : "A user has already this public key."}, status=HTTP_200_OK)
+
+
+	student = Student (username=username, given_names=surname, email=email, password=password, last_name=last_name , public_key=public_key )
+	student.save()
+	return Response({'action': True}, status=HTTP_200_OK)
+
+
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def issue_diploma(request):
@@ -62,10 +88,10 @@ def issue_diploma(request):
 	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.schema.recipient.identity), diploma_file=request.schema)
 	temp_diploma.save()
 	#Blockcert issue (+ UPDATE TRANSACTION ID)
-	
+
 	#Delete diploma from DB if refused
 
-	
+
 @api_view(["POST"])
 def verify_certificate(request):
 	diploma = request.data.get("diploma")
