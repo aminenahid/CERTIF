@@ -29,8 +29,8 @@ function ButtonAppBar(props) {
             CERT'<span className="text-bold">IF</span>
           </Typography>
           <Button component={NavLink} to="/verify" color="inherit">VERIFIER</Button>
-          <Button component={NavLink} to="/about" color="inherit">A PROPOS</Button>
-          <Button component={NavLink} to="/contact" color="inherit">CONTACT</Button>
+          {/*} <Button component={NavLink} to="/about" color="inherit">A PROPOS</Button>
+          <Button component={NavLink} to="/contact" color="inherit">CONTACT</Button> */}
           <Button component={NavLink} to="/publish" color="inherit">PUBLIER</Button>
           <Button  variant="contained" component={NavLink} to="/sign_in">CONNEXION</Button>
         </Toolbar>
