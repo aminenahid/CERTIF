@@ -1,0 +1,6 @@
+FROM hex4404/certif_back:1.4
+MAINTAINER Hex4404
+
+COPY . /testingPython/
+
+ENTRYPOINT bitcoind -daemon && bash

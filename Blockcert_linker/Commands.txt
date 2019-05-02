@@ -1,0 +1,13 @@
+issuer=`bitcoin-cli getnewaddress`
+privKey=`bitcoin-cli dumpprivkey $issuer`
+bitcoin-cli generate 101
+bitcoin-cli sendtoaddress $issuer 5
+echo "$issuer;$privKey">testingPython/keys
+cd testingPython && python3
+import UploadAndVerify as uav; import os
+schema=os.popen("cat /cert-issuer/examples/data-testnet/unsigned_certificates/3bc1a96a-3501-46ed-8f75-49612bbac257.json").read()
+with open("keys","r") as file:
+    issuer, private = [x.strip() for x in file.read().split(";")]
+
+uploaded=uav.issueToBlockChain(issuer,private,schema)
+res=uav.verifyOnBlockChain_v2(uploaded[2])
