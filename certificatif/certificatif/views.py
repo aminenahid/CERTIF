@@ -18,6 +18,9 @@ from rest_framework.status import (
 )
 import json
 import random
+import sys
+sys.path.insert(0, '../Blockcert_linker/')
+import UploadAndVerify as uav
 
 @api_view(["POST"])
 def login(request):
@@ -101,7 +104,7 @@ def issue_diploma(request):
 
 	#Blockcert issue and database update
 	#check the name of the private_key attribute
-	is_validated, transaction_id, uploaded_diploma = issueToBlockChain(request.user.public_key, private_key, str(temp_diploma.diploma_file))
+	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, private_key, str(temp_diploma.diploma_file))
 	if is_validated:
 		group.transaction = transaction_id
 		temp_diploma.diploma_file = json.loads(uploaded_diploma)
@@ -122,14 +125,14 @@ def verify_certificate(request):
 	if diploma is None:
 		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
 
-	public_key = diploma["public_key"] # To modify, Louis knew it, will know it and will tell us
+	univ_name = diploma["badge"]["issuer"]["name"] # FIXME as to work with public_key (Louis)
 
 	univ = None
 	try:
-		univ = University.objects.get(public_key=public_key)
-	except:
-		return Response({'is_valid': False, 'error': "Invalid university"}, status=HTTP_404_NOT_FOUND)
+		univ = University.objects.get(name=univ_name)
+	except Exception as error:
+		return Response({'is_valid': False, 'error': "Invalid university: "+str(error)}, status=HTTP_404_NOT_FOUND)
 
-	# Call Louis' function and check return value
-
-	return Response({'is_valid': True, 'university': univ.short_name }, status=HTTP_200_OK)
+	# Verify the diploma in the Blockchain
+	is_valid = uav.verifyOnBlockChain_v2(diploma)
+	return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
