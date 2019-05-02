@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {Grid, Typography, Paper,Button} from '@material-ui/core';
+import axios from 'axios'
 import Dropzone from './Dropzone'
 import Pastille from './Pastille'
 import Navbar from './Navbar'
@@ -26,9 +27,22 @@ class Verify extends Component {
     this.setState({'file':uploadedFile,status:'fileNotVerif'})
   }
   verify= () => {
-   
+    axios.post('http://localhost:8000/api/verify_certificate', this.state.file)
+    .then(res => {
+        let response = res.data;
+        if(response.is_valid==true){
+          this.setState({"status":"Ok"});
+        }else{
+          this.setState({"status":"notOk"});
+        }
+       
+    }).catch(e => {
+        alert("erreur, serveur injoignable ou fichier incorrect")
+        this.setState({"file":null,status:"noFile"})
+    })
 
-    }
+
+  }
   
   render(){
 
@@ -37,7 +51,13 @@ class Verify extends Component {
   if(!this.state.file){
     dropzone=<Dropzone action={this.fileHandler} />
   } else {
-    dropzone=<Paper className={classes.paper}><Typography variant="body1">{this.state.file}</Typography></Paper>
+    let theFile=JSON.parse(this.state.file);
+    theFile.image=null;
+    theFile.badge.image=null
+    theFile.badge.issuer.image=null
+    theFile.badge.signatureLines[0].image=null
+    console.log(theFile)
+    dropzone=<Paper className={classes.paper}><Typography variant="body1">{JSON.stringify(theFile)}</Typography></Paper>
   }
   return (
     <div className={classes.root}>
@@ -62,7 +82,7 @@ class Verify extends Component {
             <Grid item>
               <Pastille status={this.state.status} />
             </Grid>
-            <Grid item><Button variant="contained" color="primary" disabled={(this.state.status==="Ok"||this.state.status==="notOk"||this.state.status==="noFile")}>Verifier</Button></Grid>
+            <Grid item><Button variant="contained" onClick={this.verify} color="primary" disabled={(this.state.status==="Ok"||this.state.status==="notOk"||this.state.status==="noFile")}>Verifier</Button></Grid>
             
           </Grid>
         </Grid>
