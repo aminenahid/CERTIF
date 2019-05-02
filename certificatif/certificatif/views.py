@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
+from django.db import transaction
 from certificatif.models import *
 from certificatif.serializers import *
 from rest_framework.status import (
@@ -52,18 +53,22 @@ def get_university_short_name(request):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
+@transaction.atomic
 def issue_diploma(request):
 	issuer_university = University.objects.get(pk=request.user.id)
+
 	if not issuer_university.authorisation_manage():
 		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
+
 	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
-	group = DiplomaGroup(university=issuer_university, transaction='none', title=request.schema.badge.name)
+	group = DiplomaGroup(university=issuer_university, transaction='none', title=request.diploma__badge__name)
 	group.save()
-	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.schema.recipient.identity), diploma_file=request.schema)
+	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.diploma__recipient__identity), diploma_file=request.diploma)
 	temp_diploma.save()
-	#Blockcert issue (+ UPDATE TRANSACTION ID)
+
+	#Blockcert issue (+ UPDATE TRANSACTION ID) get transaction id
 	
-	#Delete diploma from DB if refused
+	#Delete diploma from DB if refused (Louis must raise an error, once done we shall take manage it)
 
 	
 @api_view(["POST"])
