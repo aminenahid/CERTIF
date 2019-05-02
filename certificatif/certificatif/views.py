@@ -10,6 +10,7 @@ from django.db import transaction
 from certificatif.models import *
 from certificatif.serializers import *
 from rest_framework.status import (
+	HTTP_401_UNAUTHORIZED,
 	HTTP_404_NOT_FOUND,
 	HTTP_400_BAD_REQUEST,
 	HTTP_200_OK,
@@ -98,9 +99,19 @@ def issue_diploma(request):
 	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.diploma__recipient__identity), diploma_file=request.diploma)
 	temp_diploma.save()
 
-	#Blockcert issue (+ UPDATE TRANSACTION ID) get transaction id
-	
-	#Delete diploma from DB if refused (Louis must raise an error, once done we shall take manage it)
+	#Blockcert issue and database update
+	#check the name of the private_key attribute
+	is_validated, transaction_id, uploaded_diploma = issueToBlockChain(request.user.public_key, private_key, str(temp_diploma.diploma_file))
+	if is_validated:
+		group.transaction = transaction_id
+		temp_diploma.diploma_file = uploaded_diploma
+		group.save()
+		temp_diploma.save()
+
+	elif:
+		#Rollback the transaction if Blockcerts issue has failed
+		transaction.rollback()
+		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
 
 
 @api_view(["POST"])
