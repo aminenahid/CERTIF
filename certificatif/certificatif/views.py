@@ -1,5 +1,5 @@
 from rest_framework import routers, serializers, viewsets, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -39,9 +39,9 @@ def logout(request):
 	request.user.auth_token.delete()
 	return Response(status=status.HTTP_200_OK)
 
-class GetUniversityShortName(APIView):
-	permission_classes = (permissions.IsAuthenticated, )
-	def get(self, request):
-		university = University.objects.get(pk=request.user.id)
-		serializedUniversity = UniversitySerializer(university)
-		return Response(serializedUniversity.data)
+@api_view(["GET"])
+@permission_classes((permissions.IsAuthenticated, ))
+def get_university_short_name(request):
+	university = University.objects.get(pk=request.user.id)
+	serializedUniversity = UniversitySerializer(university)
+	return Response(serializedUniversity.data)
