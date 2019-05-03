@@ -47,7 +47,7 @@ class SignIn extends Component {
         .then(res => {
             sessionStorage.setItem('token', res.data.token);
             this.setState({"connected":true})
-            axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+localStorage.getItem('token')}})
+            axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
             .then( res => {
                 sessionStorage.setItem('short_name', res.data.short_name);
                 this.setState({"redirect" :  <Redirect to="/" /> })
