@@ -24,7 +24,7 @@ const styles = theme => ({
     paperFooter:{
         textAlign: 'center'
     },
-    textField: {        
+    textField: {
         width: 200,
     },
 
@@ -37,7 +37,7 @@ class SignIn extends Component {
         password: "",
         redirect :"",
         connected: false
-        
+
     }
     handleChange = name => event => {
         this.setState({ [name] : event.target.value });
@@ -45,19 +45,19 @@ class SignIn extends Component {
     login = ()=> {
         axios.post('http://localhost:8000/api/login', {'username' :this.state.username,'password':this.state.password})
         .then(res => {
-			if ( res.data.is_univ ) {
-				sessionStorage.setItem('token', res.data.token);
-				this.setState({"connected":true})
-				axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
-				.then( res => {
-					sessionStorage.setItem('short_name', res.data.short_name);
-					this.setState({"redirect" :  <Redirect to="/" /> })
-				}).catch(e => {
-					alert("connexion disponible uniquement pour les universités actuellement")
-				})	
-			}else {
-				alert("connexion disponible uniquement pour les universités actuellement")
-			}
+      			if ( res.data.is_univ ) {
+      				sessionStorage.setItem('token', res.data.token);
+      				this.setState({"connected":true})
+      				axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
+      				.then( res => {
+      					sessionStorage.setItem('short_name', res.data.short_name);
+      					this.setState({"redirect" :  <Redirect to="/" /> })
+      				}).catch(e => {
+      					alert("connexion disponible uniquement pour les universités actuellement")
+      				})
+      			}else {
+      				alert("connexion disponible uniquement pour les universités actuellement")
+      			}
         }).catch(e => {
             alert("erreur, nom de compte ou mdp incorrect")
         })
@@ -67,7 +67,7 @@ class SignIn extends Component {
     render(){
         const {classes} = this.props;
         return (
-           
+
             <div className="signInComponent">
             <Navbar connected={this.state.connected} />
                 <Grid container className="classes.root" justify="center">
@@ -78,11 +78,11 @@ class SignIn extends Component {
                                     <Typography color="primary" variant="h4">Connexion à CERT'<span className="text-bold">IF</span></Typography>
                                 </Grid>
                                 <Grid item xs={10}>
-                                <TextField id="username" type="text" label="Identifiant" className={classes.textField} 
+                                <TextField id="username" type="text" label="Identifiant" className={classes.textField}
                                             value={this.state.username} onChange={this.handleChange('username')}/>
                                 </Grid>
                                 <Grid item xs={10}>
-                                <TextField id="password" type="password" label="Mot de passe" className={classes.textField} 
+                                <TextField id="password" type="password" label="Mot de passe" className={classes.textField}
                                             value={this.state.password} onChange={this.handleChange('password')}/>
                                 </Grid>
                                 <Grid item xs={6}>
@@ -96,7 +96,7 @@ class SignIn extends Component {
                     </Grid>
                 </Grid>
                 {this.state.redirect}
-            </div>            
+            </div>
         )
     }
 }
