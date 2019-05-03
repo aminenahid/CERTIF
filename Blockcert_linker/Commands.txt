@@ -1,9 +1,11 @@
 issuer=`bitcoin-cli getnewaddress`
 privKey=`bitcoin-cli dumpprivkey $issuer`
 bitcoin-cli generate 101
+issuer="mtT7JjAKq3eNJ2LxA5DjMTaPRJBYjbFLaB"
+privKey="cTg6zf4Sei819nce3R2XW1S6wAJFZaDLK7oyBeRpnfu48buFywmK"
 bitcoin-cli sendtoaddress $issuer 5
-echo "$issuer;$privKey">testingPython/keys
-cd testingPython && python3
+echo "$issuer;$privKey">/testingPython/keys
+cd /testingPython && python3
 import UploadAndVerify as uav; import os
 schema=os.popen("cat /cert-issuer/examples/data-testnet/unsigned_certificates/3bc1a96a-3501-46ed-8f75-49612bbac257.json").read()
 with open("keys","r") as file:
@@ -11,3 +13,18 @@ with open("keys","r") as file:
 
 uploaded=uav.issueToBlockChain(issuer,private,schema)
 res=uav.verifyOnBlockChain_v2(uploaded[2])
+
+
+#===========For starting the docker
+bitcoin-cli generate 101
+issuer="mtT7JjAKq3eNJ2LxA5DjMTaPRJBYjbFLaB"
+privKey="cTg6zf4Sei819nce3R2XW1S6wAJFZaDLK7oyBeRpnfu48buFywmK"
+bitcoin-cli sendtoaddress $issuer 5
+python3 /certificatif/manage.py makemigrations certificatif
+python3 /certificatif/manage.py migrate
+python3 /certificatif/manage.py runserver
+
+
+#for the new upload and verify .py
+with open(os.path.join(DIR, "unsigned_certificates", FILENAME), "w+") as file:
+	file.write(schema)

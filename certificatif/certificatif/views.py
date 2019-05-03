@@ -89,32 +89,36 @@ def signup(request):
 #This has not been tested
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
-@transaction.atomic
 def issue_diploma(request):
+	transaction.set_autocommit(False)
 	issuer_university = University.objects.get(pk=request.user.id)
 
 	if not issuer_university.authorisation_manage():
 		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
 
 	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
-	group = DiplomaGroup(university=issuer_university, title=request.diploma__badge__name)
+	diploma=request.data.get("diploma")
+	group = DiplomaGroup(university=issuer_university, title=diploma["badge"]["name"])
 	group.save()
-	temp_diploma = Diploma(group=group, student=Student.objects.get(email=request.diploma__recipient__identity), diploma_file=request.diploma)
+	temp_diploma = Diploma(group=group, student=Student.objects.get(email=diploma["recipient"]["identity"]), diploma_file=diploma)
 	temp_diploma.save()
 
 	#Blockcert issue and database update
 	#check the name of the private_key attribute
-	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, private_key, str(temp_diploma.diploma_file))
+	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, request.data.get("private_key"), json.dumps(temp_diploma.diploma_file))
 	if is_validated:
 		group.transaction = transaction_id
 		temp_diploma.diploma_file = json.loads(uploaded_diploma)
 		group.save()
 		temp_diploma.save()
+		transaction.commit()
+		transaction.set_autocommit(True)
 		return Response({'action': True, 'diploma':json.loads(uploaded_diploma)}, status=HTTP_200_OK)
 
 	else:
 		#Rollback the transaction if Blockcerts issue has failed
 		transaction.rollback()
+		transaction.set_autocommit(True)
 		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
 
 #This has not been tested neither

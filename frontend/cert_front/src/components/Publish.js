@@ -37,7 +37,7 @@ class Publish extends Component {
       'url':'http://localhost:8000/api/issue', 
       'data':{'diploma' : JSON.parse(this.state.file), 'private_key': this.state.privateKey},
       'method':'post',
-      'headers': {"Authorization" : "token "+localStorage.getItem('token')}
+      'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}
     }).then(res => {
       let response = res.data;
       if(response.action){

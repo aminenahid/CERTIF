@@ -10,9 +10,13 @@ import cert_verifier as cverifier
 from cert_issuer import issue_certificates, config
 from cert_verifier import verifier
 
-DIR=os.getcwd()
-FILENAME="toUpload.json"
+PATH=os.path.realpath(__file__)
+DIR=PATH[:PATH.rfind(os.sep)]
+UPLOADFILE="toUpload.json"
 VERIFYFILE="toVerify.json"
+config.PATH=DIR
+#We need to write the private key in the appropriate file
+parsedConfig = None
 
 
 def issueToBlockChain(pubKey, privKey, schema):
@@ -22,27 +26,36 @@ def issueToBlockChain(pubKey, privKey, schema):
     @param schema (json) : the json containing the cert-schema to issue on the blockchain
     @return a tuple containing first hand a boolean indicating whether the issue was successful or not, and second hand the transaction id of the issue if successful. It also provides the fully uploaded (i.e. real) schema.
        """
-    config.PATH=DIR
+    os.system('sed -i.bak "s/address[=][a-zA-Z0-9]*/address={}/g" {}'.format(pubKey, os.path.join(DIR,"conf.ini")))
+    global parsedConfig
+    if parsedConfig is None:
+        try:
+            configTemp=config.get_config()
+            parsedConfig=configTemp
+        except Exception as error:
+            print("The following error was caught : "+str(error))
+            return False, "", ""
     try:
-        #We need to write the private key in the appropriate file
-        parsedConfig = config.get_config()
+
         with open(os.path.join(parsedConfig.usb_name,parsedConfig.key_file),"w+") as privKeyFile:
             privKeyFile.write(privKey)
         #Now, let's write the cert-schema in file as pointed out by the conf.ini file
-        with open(os.path.join(parsedConfig.unsigned_certificates_dir,FILENAME), "w+") as certificateFile:
+        with open(os.path.join(parsedConfig.unsigned_certificates_dir,UPLOADFILE), "w+") as certificateFile:
             certificateFile.write(str(schema))
         #We can now set the address of the issuer
         parsedConfig.issuing_address=pubKey
         #Let's go
-        txID = issue_certificates.main(parsedConfig)
+        #txID = issue_certificates.main(parsedConfig)
+        #print("Issued, txId is : "+str(txID))
+        os.system("cert-issuer -c "+os.path.join(DIR,"conf.ini"))
         #Of course, remove the useless files
         os.remove(os.path.join(parsedConfig.usb_name,parsedConfig.key_file))
-        os.remove(os.path.join(parsedConfig.unsigned_certificates_dir,FILENAME))
+        os.remove(os.path.join(parsedConfig.unsigned_certificates_dir,UPLOADFILE))
         #Now, let's return the real signed file
         finalFile=""
-        with open(os.path.join(parsedConfig.blockchain_certificates_dir,FILENAME), "r") as uploaded:
+        with open(os.path.join(parsedConfig.blockchain_certificates_dir,UPLOADFILE), "r") as uploaded:
                finalFile=uploaded.read()
-        return True, txID, finalFile
+        return True, "", finalFile
     except Exception as error:
         print(error)
         return False, "", None
@@ -58,7 +71,7 @@ def verifyOnBlockChain(jsonContent, transaction_id=None):
 def verifyOnBlockChain_v2(schema, transaction_id=None):
     try:
         with open(VERIFYFILE,"w+") as toVerify:
-            toVerify.write(schema)
+            toVerify.write(json.dumps(schema))
     except Exception as error:
             print(error)
     res = verifier.verify_certificate_file(VERIFYFILE, transaction_id)
