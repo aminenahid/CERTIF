@@ -108,7 +108,8 @@ Vous aurez besoin de cert-tools pour créer ce diplôme, si vous ne l'avez pas, 
 #### Installation de cert-tools
 
 Entrez tout simplement
-```git clone https://github.com/blockchain-certificates/cert-tools.git && cd cert-tools
+```
+git clone https://github.com/blockchain-certificates/cert-tools.git && cd cert-tools
 pip install .
 ```
 Pour plus de détail, allez voir sur le [repo officiel](https://github.com/blockchain-certificates/cert-tools.git)
