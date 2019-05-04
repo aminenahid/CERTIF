@@ -105,7 +105,12 @@ def issue_diploma(request):
 
 	#Blockcert issue and database update
 	#check the name of the private_key attribute
-	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, request.data.get("private_key"), json.dumps(temp_diploma.diploma_file))
+	was_added = uav.addSchema(json.dumps(temp_diploma.diploma_file))
+	if not was_added:
+		transaction.rollback()
+		transaction.set_autocommit(True)
+		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
+	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, request.data.get("private_key"))
 	if is_validated:
 		group.transaction = transaction_id
 		temp_diploma.diploma_file = json.loads(uploaded_diploma)

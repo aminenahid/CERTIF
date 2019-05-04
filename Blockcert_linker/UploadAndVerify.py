@@ -12,14 +12,39 @@ from cert_verifier import verifier
 
 PATH=os.path.realpath(__file__)
 DIR=PATH[:PATH.rfind(os.sep)]
-UPLOADFILE="toUpload.json"
+UPLOADFILE="toUpload{}.json"
 VERIFYFILE="toVerify.json"
+fileNumber=0
 config.PATH=DIR
 #We need to write the private key in the appropriate file
 parsedConfig = None
 
+def _getConfig():
+    global parsedConfig
+    if parsedConfig is None:
+        try:
+            configTemp=config.get_config()
+            parsedConfig=configTemp
+        except Exception as error:
+            return None
+    return parsedConfig
 
-def issueToBlockChain(pubKey, privKey, schema):
+def addSchema(schema):
+    """
+    Adds a blockert-schema to the future uploaded batch transaction.
+    @param schema (str) : the string containing the json file (or blockcert-schema)
+    @return True if the file was added successfully.
+    """
+    global fileNumber
+    fileNumber+=1
+    parsedConfig=_getConfig()
+    if parsedConfig is None:
+        return False
+    with open(os.path.join(parsedConfig.unsigned_certificates_dir,UPLOADFILE.format(fileNumber)), "w+") as certificateFile:
+        certificateFile.write(schema)
+    return True
+
+def issueToBlockChain(pubKey, privKey):
     """Issue to the blockchain a blockcert schema.
     @param pubKey (str): the public key of the issuer
     @param privKey (str) : the private key of the issuer
@@ -27,35 +52,28 @@ def issueToBlockChain(pubKey, privKey, schema):
     @return a tuple containing first hand a boolean indicating whether the issue was successful or not, and second hand the transaction id of the issue if successful. It also provides the fully uploaded (i.e. real) schema.
        """
     os.system('sed -i.bak "s/address[=][a-zA-Z0-9]*/address={}/g" {}'.format(pubKey, os.path.join(DIR,"conf.ini")))
-    global parsedConfig
+    parsedConfig=_getConfig()
     if parsedConfig is None:
-        try:
-            configTemp=config.get_config()
-            parsedConfig=configTemp
-        except Exception as error:
-            print("The following error was caught : "+str(error))
-            return False, "", ""
+        return False, "", ""
     try:
 
         with open(os.path.join(parsedConfig.usb_name,parsedConfig.key_file),"w+") as privKeyFile:
             privKeyFile.write(privKey)
         #Now, let's write the cert-schema in file as pointed out by the conf.ini file
-        with open(os.path.join(parsedConfig.unsigned_certificates_dir,UPLOADFILE), "w+") as certificateFile:
-            certificateFile.write(str(schema))
         #We can now set the address of the issuer
         parsedConfig.issuing_address=pubKey
         #Let's go
         #txID = issue_certificates.main(parsedConfig)
         #print("Issued, txId is : "+str(txID))
-        os.system("cert-issuer -c "+os.path.join(DIR,"conf.ini"))
+        result=os.system("cert-issuer -c "+os.path.join(DIR,"conf.ini"))
         #Of course, remove the useless files
         os.remove(os.path.join(parsedConfig.usb_name,parsedConfig.key_file))
-        os.remove(os.path.join(parsedConfig.unsigned_certificates_dir,UPLOADFILE))
+        os.system("rm "+os.path.join(parsedConfig.unsigned_certificates_dir,UPLOADFILE.format("*")))
         #Now, let's return the real signed file
         finalFile=""
-        with open(os.path.join(parsedConfig.blockchain_certificates_dir,UPLOADFILE), "r") as uploaded:
+        with open(os.path.join(parsedConfig.blockchain_certificates_dir,UPLOADFILE.format(fileNumber)), "r") as uploaded:
                finalFile=uploaded.read()
-        return True, "", finalFile
+        return result==0, "", finalFile
     except Exception as error:
         print(error)
         return False, "", None
