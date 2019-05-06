@@ -72,6 +72,10 @@ class SignIn extends Component {
     redirect = () =>{ 
         this.setState({"redirect" :  <Redirect to="/forgotten" /> })
     }
+    
+    redirect_signup = () =>{ 
+        this.setState({"redirect" :  <Redirect to="/sign_up" /> })
+    }
 
     render(){
         const {classes} = this.props;
@@ -100,8 +104,13 @@ class SignIn extends Component {
                                 <Grid item xs={6}>
                                     <Button variant="contained" color="primary" onClick={this.login}>Connexion</Button>
                                 </Grid>
+                                <Grid item xs={12}>
+                                <Typography color="grey" variant="h6">NOUVEL UTILISATEUR?
+                                    <Button onClick={this.redirect_signup}>Inscris-toi</Button></Typography>
+                                </Grid>
                             </Grid>
                         </Paper>
+                        
                     </Grid>
                 </Grid>
                 {this.state.redirect}

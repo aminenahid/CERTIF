@@ -48,7 +48,7 @@ class SignUp extends Component {
         this.setState({ [name] : event.target.value });
     };
     signup = ()=> {
-        axios.post('http://localhost:8000/api/signup', {'username' :this.state.username,'password':this.state.password,'email' :this.state.email, 'last_name' :this.state.last_name, 'given_names':this.state.given_names, 'public_key' : 25893 })
+        axios.post('http://localhost:8000/api/signup', {'username' :this.state.username,'password':this.state.password,'email' :this.state.email, 'last_name' :this.state.last_name, 'given_names':this.state.given_names })
         .then(res => {
       			if ( res.data.action ) {
 					this.setState({"message" : "Votre compte a été créé avec succès." })
