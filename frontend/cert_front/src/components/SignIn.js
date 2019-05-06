@@ -36,6 +36,7 @@ class SignIn extends Component {
         username: "",
         password: "",
         redirect :"",
+        message : " ",
         connected: false
 
     }
@@ -47,24 +48,16 @@ class SignIn extends Component {
         .then(res => {
 				sessionStorage.setItem('token', res.data.token);
       			this.setState({"connected":true})
-      			if ( res.data.is_univ ) {
-      				
-      				axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
+      			axios({'url':'http://localhost:8000/api/user', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
       				.then( res => {
-      					sessionStorage.setItem('short_name', res.data.short_name);
+      					sessionStorage.setItem('user_name', res.data.last_name+' '+res.data.given_names);
       					this.setState({"redirect" :  <Redirect to="/" /> })
-      				}).catch(e => {
-      					alert("Erreur")
-      				})
-      			}else {
-					//TODO : Connexion d'un étudiant
-					sessionStorage.setItem('token', res.data.token);
-					this.setState({"connected": true})
-					this.setState({"redirect" :  <Redirect to="/" /> })
-      				
-      			}
+				}).catch(e => {
+      					alert("Une erreur est survenue!")
+				})
         }).catch(e => {
-            alert("Erreur, nom de compte ou mdp incorrect")
+			this.setState({"message" : "Identifiant ou mot de passe incorrect." })
+            
         })
 
     }
@@ -89,6 +82,9 @@ class SignIn extends Component {
                             <Grid container direction= "row" justify="center" spacing={24}>
                                 <Grid item xs={12}>
                                     <Typography color="primary" variant="h4">Connexion à CERT'<span className="text-bold">IF</span></Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography id = "message" color="primary" variant="h6">{this.state.message}</Typography>
                                 </Grid>
                                 <Grid item xs={10}>
                                 <TextField id="username" type="text" label="Identifiant" className={classes.textField}

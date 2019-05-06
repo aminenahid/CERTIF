@@ -48,16 +48,20 @@ class SignUp extends Component {
         this.setState({ [name] : event.target.value });
     };
     signup = ()=> {
-        axios.post('http://localhost:8000/api/signup', {'username' :this.state.username,'password':this.state.password,'email' :this.state.email, 'last_name' :this.state.last_name, 'given_names':this.state.given_names })
-        .then(res => {
-      			if ( res.data.action ) {
-					this.setState({"message" : "Votre compte a été créé avec succès." })
-      			}else {
-					this.setState({"message" : res.data.erreur })
-      			}
-        }).catch(e => {
-            alert("Erreur")
-        })
+		if(this.state.password == this.state.confirm_password) {
+			axios.post('http://localhost:8000/api/signup', {'username' :this.state.username,'password':this.state.password,'email' :this.state.email, 'last_name' :this.state.last_name, 'given_names':this.state.given_names })
+			.then(res => {
+					if ( res.data.action ) {
+						this.setState({"message" : "Votre compte a été créé avec succès." })
+					}else {
+						this.setState({"message" : res.data.erreur })
+					}
+			}).catch(e => {
+				alert("Erreur")
+			})
+		}else{
+			this.setState({"message" : "Les mots de passe ne sont pas identiques." })
+		}
 
     }
 
@@ -87,7 +91,7 @@ class SignUp extends Component {
                                             value={this.state.given_names} onChange={this.handleChange('given_names')}/>
                                 </Grid>
                                 <Grid item xs={6}>                       
-                                <TextField required id="username" type="text" label="Nom d'utilisateur" className={classes.textField}
+                                <TextField required id="username" type="text" label="Nom d'utilisateur" required className={classes.textField}
                                             value={this.state.username} onChange={this.handleChange('username')}/>
                                 </Grid>
                                 <Grid item xs={6}>

@@ -47,7 +47,7 @@ class ButtonAppBar extends Component {
             {this.props.connected ? <Button component={NavLink} to="/publish" color="inherit">PUBLIER</Button> : <span></span>}
             {(!this.props.connected || this.props.connected===false)? <Button  variant="contained" component={NavLink} to="/sign_in">CONNEXION</Button> 
             : <Button  variant="contained" aria-owns={anchorEl ? 'simple-menu' : undefined}
-              aria-haspopup="true" onClick={this.handleClick}>{sessionStorage.getItem('short_name')}</Button>}
+              aria-haspopup="true" onClick={this.handleClick}>{sessionStorage.getItem('user_name')}</Button>}
             <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
               <MenuItem component={NavLink} to="/sign_out" >Déconnexion</MenuItem>
             </Menu>

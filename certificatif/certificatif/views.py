@@ -32,6 +32,13 @@ def login(request):
 	return Response({'token': token.key}, status=HTTP_200_OK)
 
 @api_view(["GET"])
+@permission_classes((permissions.IsAuthenticated, ))
+def get_user_name(request):
+	user = User.objects.get(pk=request.user.id)
+	serializedUser = UserSerializer(user)
+	return Response(serializedUser.data)
+
+@api_view(["GET"])
 def logout(request):
 	request.user.auth_token.delete()
 	return Response(status=status.HTTP_200_OK)
