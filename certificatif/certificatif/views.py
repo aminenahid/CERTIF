@@ -14,6 +14,7 @@ from rest_framework.status import (
 	HTTP_404_NOT_FOUND,
 	HTTP_400_BAD_REQUEST,
 	HTTP_200_OK,
+	HTTP_204_NO_CONTENT,
 	HTTP_403_FORBIDDEN
 )
 import json
@@ -32,7 +33,7 @@ def login(request):
 
 	user = authenticate(username=username, password=password)
 	if not user:
-		return Response({'error': 'Invalid Credentials'}, status=HTTP_404_NOT_FOUND)
+		return Response({'error': 'Invalid Credentials'}, status=HTTP_200_OK)
 
 	is_univ=True
 	try:
@@ -86,6 +87,7 @@ def signup(request):
 	'''
 	return Response({'action': True}, status=HTTP_200_OK)
 
+'''
 #This has not been tested
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
@@ -97,10 +99,15 @@ def issue_diploma(request):
 		return Response({'error': 'Your institution is not authorised to issue diplomas'}, status=HTTP_403_FORBIDDEN)
 
 	#Storage of temporary diploma (VERIFY REQUEST ATTRIBUTES !!!)
+	try:
+		student=Student.objects.get(email=diploma["recipient"]["identity"])
+	except Exception as error:
+		return Response({'error': 'Student cannot be found'+str(error)}, status=HTTP_200_OK)
+
 	diploma=request.data.get("diploma")
 	group = DiplomaGroup(university=issuer_university, title=diploma["badge"]["name"])
 	group.save()
-	temp_diploma = Diploma(group=group, student=Student.objects.get(email=diploma["recipient"]["identity"]), diploma_file=diploma)
+	temp_diploma = Diploma(group=group, student=student, diploma_file=diploma)
 	temp_diploma.save()
 
 	#Blockcert issue and database update
@@ -109,7 +116,7 @@ def issue_diploma(request):
 	if not was_added:
 		transaction.rollback()
 		transaction.set_autocommit(True)
-		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
+		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_200_OK)
 	is_validated, transaction_id, uploaded_diploma = uav.issueToBlockChain(request.user.public_key, request.data.get("private_key"))
 	if is_validated:
 		group.transaction = transaction_id
@@ -125,6 +132,7 @@ def issue_diploma(request):
 		transaction.rollback()
 		transaction.set_autocommit(True)
 		return Response({'error': 'Uploading your diploma to the blockchain has failed'}, status=HTTP_401_UNAUTHORIZED)
+'''
 
 #This has not been tested neither
 @api_view(["POST"])
@@ -140,7 +148,7 @@ def verify_certificate(request):
 	try:
 		univ = University.objects.get(name=univ_name)
 	except Exception as error:
-		return Response({'is_valid': False, 'error': "Invalid university: "+str(error)}, status=HTTP_404_NOT_FOUND)
+		return Response({'is_valid': False, 'error': "Invalid university: "+str(error)}, status=HTTP_200_OK)
 
 	# Verify the diploma in the Blockchain
 	is_valid = uav.verifyOnBlockChain_v2(diploma)
