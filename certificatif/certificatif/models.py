@@ -49,6 +49,15 @@ class University (models.Model):
     def get_short_name(self):
         return "%s" % (self.short_name)
 
+    def is_authorised (self, year, my_diploma_type):
+        univ_authorisations = self.authorisation_set.all()
+        authorised = False
+        for ua in univ_authorisations:
+            if year>=ua.authorisation_year and year<=ua.expiry_year and my_diploma_type==ua.diploma_type:
+                authorised = True
+                break
+        return authorised
+
 class Diploma (models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     diploma_file = JSONField()
@@ -61,4 +70,5 @@ class Authorisation (models.Model):
     law = models.CharField(max_length=200, null=True)
     authorisation_year = models.IntegerField(validators=[MaxValueValidator(datetime.date.today().year)])
     expiry_year = models.IntegerField(validators=[MinValueValidator(datetime.date.today().year)])
+    diploma_type = models.CharField(max_length=200)
     REQUIRED_FIELDS = ['authorisation_year','expiry_year']
