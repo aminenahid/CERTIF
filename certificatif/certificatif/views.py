@@ -62,7 +62,7 @@ def signup(request):
 
 	return Response({'action': True}, status=HTTP_200_OK)
 
-#This has not been tested neither
+#TODO This has not been tested neither
 @api_view(["POST"])
 def verify_certificate(request):
 	diploma = request.data.get("diploma")
@@ -70,25 +70,40 @@ def verify_certificate(request):
 	if diploma is None:
 		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
 
-	univ_name = diploma["badge"]["issuer"]["name"] # FIXME as to work with public_key (Louis)
-
-	univ = None
 	try:
+		univ_name = diploma["badge"]["issuer"]["name"]
 		univ = University.objects.get(name=univ_name)
+		year = diploma["issuedOn"][0:4]
+		diploma_type = diploma['badge']['name']
+		
+		if not univ.is_authorised(year, diploma_type): 
+			return Response({'error': 'The issuing university was not allowed to issue such a diploma on the issue date'}, status=HTTP_200_OK)
+		
+		# Verify the diploma in the Blockchain
+		is_valid = uav.verifyOnBlockChain_v2(diploma)
+		return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
 	except Exception as error:
 		return Response({'is_valid': False, 'error': "Invalid university: "+str(error)}, status=HTTP_200_OK)
 
-	# Verify the diploma in the Blockchain
-	is_valid = uav.verifyOnBlockChain_v2(diploma)
-	return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
 
+#TODO This has not been tested neither
 @api_view(["POST"])
 @permission_classes((IsAuthenticated, ))
 def upload_diploma(request):
 	my_diploma = request.data.get("diploma")
+	student = User.objects.get(pk=request.user.id)
 
-	if diploma is None:
+	if my_diploma is None:
 		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
 
-	diploma = Diploma(diploma_file = my_diploma, student = User.objects.get(pk=request.user.id))
+	diploma = Diploma(diploma_file = my_diploma, student = student)
 	diploma.save()
+	return Response({'upload_status': 'ok'}, status=HTTP_200_OK)
+
+#TODO This has not been tested neither
+@api_view(["GET"])
+@permission_classes((IsAuthenticated, ))
+def look_for_my_diplomas(request):
+	student = User.objects.get(pk=request.user.id)
+	portfolio = Diploma.objects.filter(student=student).values_list('id','diploma_file')
+	return Response({'diplomas': portfolio}, status=HTTP_200_OK)
