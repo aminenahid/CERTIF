@@ -59,35 +59,41 @@ def get_university_short_name(request):
 
 @api_view(["POST"])
 def signup(request):
-	'''
+
 	email = request.data.get("email")
 	username = request.data.get("username")
 	password = request.data.get("password")
-	surname = request.data.get("surname")
+	given_names = request.data.get("given_names")
 	last_name= request.data.get("last_name")
 	public_key= request.data.get("public_key")
 
 	try:
 		Student.objects.get(email=email)
-		return Response({'action': False, 'Reason' : "A user is already registred with this email."}, status=HTTP_200_OK)
+		return Response({'action': False, 'erreur' : "L'adresse mail est déjà utilisée."}, status=HTTP_200_OK)
 	except:
 		pass
 
+	try:
+		User.objects.get(username=username)
+		return Response({'action': False, 'erreur' : "Ce nom d'utilisateur est déjà utilisé."}, status=HTTP_200_OK)
+	except:
+		pass
 
 	try:
 		User.objects.get(public_key=public_key)
-		return Response({'action': False, 'Reason' : "A user has already this public key."}, status=HTTP_200_OK)
+		return Response({'action': False, 'erreur' : "La clé publique est déjà associée à un autre compte."}, status=HTTP_200_OK)
 	except:
 		pass
 
 
 
-	student = Student (username=username, given_names=surname, email=email, password=password, last_name=last_name , public_key=public_key )
+	student = Student (username=username, given_names=given_names, email=email, password=password, last_name=last_name , public_key=public_key )
 	student.save()
-	'''
+
 	return Response({'action': True}, status=HTTP_200_OK)
 
-'''
+
+
 #This has not been tested
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
@@ -153,3 +159,5 @@ def verify_certificate(request):
 	# Verify the diploma in the Blockchain
 	is_valid = uav.verifyOnBlockChain_v2(diploma)
 	return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
+
+'''

@@ -70,7 +70,7 @@ function Pastille(props){
             <Grid container direction="column" alignItems="center" spacing={8} justify="center">
                     <Grid item>
                         <Avatar className={classes.greenAvatar}>
-                            <Typography variant="h1" className="avatarText">V</Typography>
+                            <Typography variant="h1" color="secondary" className="avatarText">V</Typography>
                         </Avatar>
                     </Grid>
                     <Grid item>
@@ -85,7 +85,7 @@ function Pastille(props){
                 <Grid container direction="column" alignItems="center" spacing={8} justify="center">
                     <Grid item>
                         <Avatar className={classes.redAvatar}>
-                            <Typography variant="h1" className="avatarText">X</Typography>
+                            <Typography variant="h1" color="secondary" className="avatarText">X</Typography>
                         </Avatar>
                     </Grid>
                     <Grid item>

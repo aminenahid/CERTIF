@@ -8,6 +8,7 @@ import Verify from './components/Verify'
 import SignIn from './components/SignIn'
 import Publish from './components/Publish'
 import SignOut from './components/SignOut'
+import Forgotten from './components/Forgotten'
 import Navbar from './components/Navbar'
 import { BrowserRouter, Route } from 'react-router-dom'
 
@@ -24,6 +25,7 @@ class App extends Component {
          <Route path='/sign_in' component={SignIn} />
          <Route path='/publish' component={Publish} />
          <Route path='/sign_out' component={SignOut}/>
+         <Route path='/forgotten' component={Forgotten}/>
       </div>
       </BrowserRouter>
     ); 
