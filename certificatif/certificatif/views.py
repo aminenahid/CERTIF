@@ -46,7 +46,7 @@ def signup(request):
 	last_name= request.data.get("last_name")
 
 	try:
-		Student.objects.get(email=email)
+		User.objects.get(email=email)
 		return Response({'action': False, 'erreur' : "L'adresse mail est déjà utilisée."}, status=HTTP_200_OK)
 	except:
 		pass
@@ -57,8 +57,8 @@ def signup(request):
 	except:
 		pass
 
-	student = Student (username=username, given_names=given_names, email=email, password=password, last_name=last_name , public_key=public_key )
-	student.save()
+	new_user = User (username=username, given_names=given_names, email=email, password=password, last_name=last_name  )
+	new_user.save()
 
 	return Response({'action': True}, status=HTTP_200_OK)
 
