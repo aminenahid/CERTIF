@@ -95,7 +95,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'certificatif.User'
+AUTH_USER_MODEL = 'certificatif.Student'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
