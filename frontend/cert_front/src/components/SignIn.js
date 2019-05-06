@@ -64,6 +64,10 @@ class SignIn extends Component {
 
     }
 
+    redirect = () =>{ 
+        this.setState({"redirect" :  <Redirect to="/forgotten" /> })
+    }
+
     render(){
         const {classes} = this.props;
         return (
@@ -86,7 +90,7 @@ class SignIn extends Component {
                                             value={this.state.password} onChange={this.handleChange('password')}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Button color="primary">Mot de passe oublié ?</Button>
+                                    <Button color="primary" onClick={this.redirect}>Mot de passe oublié ?</Button>
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Button variant="contained" color="primary" onClick={this.login}>Connexion</Button>
