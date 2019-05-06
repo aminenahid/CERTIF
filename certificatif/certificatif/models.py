@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
 import datetime 
 from django.core import validators
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.postgres.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
 
@@ -54,3 +55,10 @@ class Diploma (models.Model):
 
     def get_diploma(self):
         return self.diploma_file
+
+class Authorisation (models.Model):
+    university = models.ForeignKey(University, on_delete=models.CASCADE)
+    law = models.CharField(max_length=200, null=True)
+    authorisation_year = models.IntegerField(validators=[MaxValueValidator(datetime.date.today().year)])
+    expiry_year = models.IntegerField(validators=[MinValueValidator(datetime.date.today().year)])
+    REQUIRED_FIELDS = ['authorisation_year','expiry_year']
