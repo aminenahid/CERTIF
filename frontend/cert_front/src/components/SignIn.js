@@ -45,21 +45,26 @@ class SignIn extends Component {
     login = ()=> {
         axios.post('http://localhost:8000/api/login', {'username' :this.state.username,'password':this.state.password})
         .then(res => {
+				sessionStorage.setItem('token', res.data.token);
+      			this.setState({"connected":true})
       			if ( res.data.is_univ ) {
-      				sessionStorage.setItem('token', res.data.token);
-      				this.setState({"connected":true})
+      				
       				axios({'url':'http://localhost:8000/api/university', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
       				.then( res => {
       					sessionStorage.setItem('short_name', res.data.short_name);
       					this.setState({"redirect" :  <Redirect to="/" /> })
       				}).catch(e => {
-      					alert("connexion disponible uniquement pour les universités actuellement")
+      					alert("Erreur")
       				})
       			}else {
-      				alert("connexion disponible uniquement pour les universités actuellement")
+					//TODO : Connexion d'un étudiant
+					sessionStorage.setItem('token', res.data.token);
+					this.setState({"connected": true})
+					this.setState({"redirect" :  <Redirect to="/" /> })
+      				
       			}
         }).catch(e => {
-            alert("erreur, nom de compte ou mdp incorrect")
+            alert("Erreur, nom de compte ou mdp incorrect")
         })
 
     }
