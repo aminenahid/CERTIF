@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
 
 
-class Student(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=30, unique=True,
         validators=[
@@ -38,7 +38,7 @@ class Student(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
 
-class University (User):
+class University (models.Model):
     name = models.CharField(max_length=100)
     short_name = models.CharField(max_length=100)
     public_key = models.CharField(max_length=128, unique=True)
@@ -50,7 +50,7 @@ class University (User):
         return "%s" % (self.short_name)
 
 class Diploma (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
     diploma_file = JSONField()
 
     def get_diploma(self):
