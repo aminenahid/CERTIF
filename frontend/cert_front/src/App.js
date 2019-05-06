@@ -11,6 +11,7 @@ import SignOut from './components/SignOut'
 import SignUp from './components/SignUp'
 import Forgotten from './components/Forgotten'
 import Navbar from './components/Navbar'
+import AddDiploma from './components/AddDiploma'
 import { BrowserRouter, Route } from 'react-router-dom'
 
 
@@ -28,6 +29,7 @@ class App extends Component {
          <Route path='/publish' component={Publish} />
          <Route path='/sign_out' component={SignOut}/>
          <Route path='/forgotten' component={Forgotten}/>
+         <Route path='/addDiploma' component={AddDiploma}/>
       </div>
       </BrowserRouter>
     ); 
