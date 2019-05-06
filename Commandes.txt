@@ -1,1 +1,0 @@
-docker run --network="host" -e "PGADMIN_DEFAULT_EMAIL=user@domain.fr" -e "PGADMIN_DEFAULT_PASSWORD=pass" -d dpage/pgadmin4
