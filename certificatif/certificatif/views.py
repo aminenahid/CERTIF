@@ -81,3 +81,14 @@ def verify_certificate(request):
 	# Verify the diploma in the Blockchain
 	is_valid = uav.verifyOnBlockChain_v2(diploma)
 	return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated, ))
+def upload_diploma(request):
+	my_diploma = request.data.get("diploma")
+
+	if diploma is None:
+		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
+
+	diploma = Diploma(diploma_file = my_diploma, student = User.objects.get(pk=request.user.id))
+	diploma.save()
