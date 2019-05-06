@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Saisie d'un diplome</title>
+        <meta charset="utf8"/>
+    </head>
+    <body>
+        <h1>Saisie d'un diplôme</h1>
+        <form id="formulaire" action="">
+            Identité :
+            <select id="identity" name="identity">
+                <option value="m">M.</option>
+                <option value="mme">Mme.</option>
+            </select><br>
+            Prénom(s) :
+            <input type="text" id="firstname" name="firstname"><br>
+            Nom(s) : 
+            <input type="text" id="lastname" name="lastname"><br>
+            Date de naissance
+            <input type="date" id="birthday" name="birthday"><br>
+            Ville de naissance :
+            <input type="text" id="bcity" name="bcity"><br>
+            Département de naissance :
+            <input type="text" id="bregion" name="bregion"><br>
+            Pays de naissance :
+            <input type="text" id="bcountry" name="bcountry"><br>
+            N° d'étudiant :
+            <input type="number" id="studentno" name="studentno"><br>
+            Département/Spécialité :
+            <select id="department" name="department">
+                <option value="BS">Biosciences</option>
+                <option value="GCU">Génie Civil et Urbanisme</option>
+                <option value="GE">Génie Electrique</option>
+                <option value="GEN">Génie Energetique et Environnement</option>
+                <option value="GI">Génie Industriel</option>
+                <option value="GM">Génie Mécanique</option>
+                <option value="GMD">Génie Mécanique et Conception</option>
+                <option value="GMC">Génie Mécanique et D?</option>
+                <option value="IF">Informatique</option>
+                <option value="SGM">Science et Génie des Matériaux</option>
+            </select><br>
+            <input type="button" value="Générer" onclick="complete_form();">
+        </form>
+        <button type="button"><a href="www.google.com">Continuer</a></button>
+        <script src="../js/formulaire_diplome.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    </body>
+</html>
