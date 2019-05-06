@@ -152,5 +152,3 @@ def verify_certificate(request):
 	# Verify the diploma in the Blockchain
 	is_valid = uav.verifyOnBlockChain_v2(diploma)
 	return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
-
-'''
