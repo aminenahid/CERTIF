@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
 import datetime 
 from django.core import validators
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.postgres.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
 
@@ -19,18 +20,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         error_messages={
             'unique': _("A user with that username already exists."),
         })
-    public_key = models.CharField(max_length=128, unique=True)
-    date_joined = models.DateField(default=datetime.date.today)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True) #To be changed
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email','public_key']
-    objects = UserManager()
-
-
-class Student (User):
     given_names = models.CharField(max_length=100,
         help_text=_('Please use a comma as separator between your given names'))
     last_name = models.CharField(max_length=100)
@@ -41,12 +33,15 @@ class Student (User):
     def get_short_name(self):
         return "%s" % (self.given_names[:self.given_names.find(',')])
 
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+    objects = UserManager()
 
-class University (User):
+
+class University (models.Model):
     name = models.CharField(max_length=100)
     short_name = models.CharField(max_length=100)
-    is_authorised = models.BooleanField(default=False)
-    autorisation_expiry_date = models.DateField()
+    public_key = models.CharField(max_length=128, unique=True)
 
     def get_full_name(self):
         return "%s" % (self.name)
@@ -54,35 +49,16 @@ class University (User):
     def get_short_name(self):
         return "%s" % (self.short_name)
 
-    def authorisation_manage(self):
-        if self.autorisation_expiry_date < datetime.date.today():
-            self.is_authorised = False
-            self.save()
-        return self.is_authorised
-
-
-class DiplomaGroup (models.Model):
-    university = models.ForeignKey(University, on_delete=models.CASCADE)
-    transaction = models.CharField(null=True, default=None, max_length=64)
-    title = models.CharField(max_length=100)
-    issue_date = models.DateField(default=datetime.date.today)
-
-
 class Diploma (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    group = models.ForeignKey(DiplomaGroup, on_delete=models.CASCADE)
-    STATUS_CHOICES = (
-        ('AT', 'En attente de validation diplômé'),
-        ('V', 'Validé'),
-        ('DC', 'Demande de rectification'),
-        ('R', 'Rejeté'),
-    )
-    status = models.CharField(
-        max_length=3,
-        choices=STATUS_CHOICES,
-        default='AT',
-    )
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
     diploma_file = JSONField()
 
     def get_diploma(self):
         return self.diploma_file
+
+class Authorisation (models.Model):
+    university = models.ForeignKey(University, on_delete=models.CASCADE)
+    law = models.CharField(max_length=200, null=True)
+    authorisation_year = models.IntegerField(validators=[MaxValueValidator(datetime.date.today().year)])
+    expiry_year = models.IntegerField(validators=[MinValueValidator(datetime.date.today().year)])
+    REQUIRED_FIELDS = ['authorisation_year','expiry_year']
