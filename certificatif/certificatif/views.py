@@ -64,7 +64,8 @@ def signup(request):
 	except:
 		pass
 
-	new_user = User (username=username, given_names=given_names, email=email, password=password, last_name=last_name  )
+	new_user = User (username=username, given_names=given_names, email=email, last_name=last_name  )
+	new_user.set_password(password)
 	new_user.save()
 
 	return Response({'action': True}, status=HTTP_200_OK)
@@ -82,10 +83,10 @@ def verify_certificate(request):
 		univ = University.objects.get(name=univ_name)
 		year = diploma["issuedOn"][0:4]
 		diploma_type = diploma['badge']['name']
-		
-		if not univ.is_authorised(year, diploma_type): 
+
+		if not univ.is_authorised(year, diploma_type):
 			return Response({'error': 'The issuing university was not allowed to issue such a diploma on the issue date'}, status=HTTP_200_OK)
-		
+
 		# Verify the diploma in the Blockchain
 		is_valid = uav.verifyOnBlockChain_v2(diploma)
 		return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
