@@ -61,7 +61,7 @@ const styles = theme => ({
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.background.default,
     },
-	},
+  },
 	
 	dialogPdf: {
 		height: '90vh'
@@ -155,6 +155,7 @@ class Wallet extends Component {
 					  </TableRow>
 					</TableHead>
 					<TableBody>
+					  {this.state.diplomas.length==0 ? <TableCell colSpan={5} style={{ color: "#7c7c7c", textAlign: 'center'}}> Votre liste de diplômes est vide.</TableCell> : <span></span>}
 					  {this.state.diplomas.map(diploma => (
 						<TableRow className={classes.row} key={diploma[0]}>
 						  <CustomTableCell component="th" scope="row">{diploma[1].badge.name}</CustomTableCell>
@@ -164,12 +165,12 @@ class Wallet extends Component {
 							<Fab color="primary" aria-label="Add" size="small" onClick={this.showPdf.bind(this, diploma[0])}>
 								<AddIcon />
 							</Fab> 
-						 </CustomTableCell>
-						 <CustomTableCell align="right">
-						 <Button color="default" className={classes.button} onClick={this.download.bind(this,diploma[0])}>
-							<SaveAltIcon/>
-						 </Button>
-				         </CustomTableCell>
+						  </CustomTableCell>
+						  <CustomTableCell align="right">
+							<Button color="default" className={classes.button} onClick={this.download.bind(this,diploma[0])}>
+								<SaveAltIcon/>
+							</Button>
+				          </CustomTableCell>
 						</TableRow>
 					  ))}
 					</TableBody>
