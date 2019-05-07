@@ -91,7 +91,7 @@ class SignUp extends Component {
                                             value={this.state.given_names} onChange={this.handleChange('given_names')}/>
                                 </Grid>
                                 <Grid item xs={6}>                       
-                                <TextField required id="username" type="text" label="Nom d'utilisateur" required className={classes.textField}
+                                <TextField required id="username" type="text" label="Nom d'utilisateur" className={classes.textField}
                                             value={this.state.username} onChange={this.handleChange('username')}/>
                                 </Grid>
                                 <Grid item xs={6}>
