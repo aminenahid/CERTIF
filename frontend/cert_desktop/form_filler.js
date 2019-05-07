@@ -42,6 +42,7 @@ function updateProgress(evt) {
 function loaded(evt) {
     // Obtain the read file data
     fileString = evt.target.result;
+    document.getElementById("message").style.display="none";
     // We need to find every possible field that is needed.
     var result=fileString.match(/[*].+?[*]/g);
     uniqueIds=Array.from(new Set(result));
