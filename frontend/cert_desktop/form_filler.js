@@ -59,10 +59,10 @@ function loaded(evt) {
         if (element!="TODAY"){
             text=element.replace(/_/g, " ");
             text=text.charAt(0)+text.slice(1).toLowerCase();
-            zoneFormulaire.innerHTML+="<br>"+text+" : <input name=\""+element+"\" type=\""+getType(text)+"\" id=\""+element+"\">";
+            zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" id=\""+element+"\"type=\""+getType(text)+"\"> </div>";
         }
     });
-    zoneFormulaire.innerHTML+="<br><input id=\"generateButton\" type=\"file\" onchange=\"generateDiplomaJSON();\" value=\"Générer le diplôme\" directory>"
+    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><input id='generateButton' class=' btn' type=\"file\" onchange=\"generateDiplomaJSON();\" value=\"Générer le diplôme\" webkitdirectory directory></div>"
     zoneFormulaire.innerHTML+="</form>";
     return uniqueFields;
 }
@@ -83,7 +83,8 @@ function getType(text){
 }
 
 function generateDiplomaJSON(){
-    path=document.getElementById("generateButton").files[0];
+    console.log(document.getElementById("generateButton"));
+    path=document.getElementById("generateButton").files[0].path;
 
     console.log(uniqueFields);
     console.log(uniqueIds);
@@ -98,7 +99,7 @@ function generateDiplomaJSON(){
         ok=ok&&ret;
     }
     if (!ok){
-        document.getElementById("form_error").innerHTML="<p>Le formulaire est incomplet ou mal rempli</p>";
+        document.getElementById("form_info").innerHTML="<p>Le formulaire est incomplet ou mal rempli</p>";
         return false;
     }
     newFileString=fileString.slice();
@@ -122,18 +123,14 @@ function generateDiplomaJSON(){
     }
 
     const fs=require('fs');
-    /*oldpath=path.slice();
-    console.log(path);
-    path=path.replace(/\/[a-z_]+\.[a-z]+/i, "");
-    console.log(path);*/
     path=path+"/diplome_"+nom+"_"+prenom+".json";
     console.log(path);
     fs.writeFile(path, newFileString, function(err) {
         if (err){
-            document.getElementById("form_error").innerHTML=err;
+            document.getElementById("form_info").innerHTML=err;
             return;
         }
-        document.getElementById("form_error").innerHTML="Fichier écrit en : "+path;
+        document.getElementById("form_info").innerHTML="Fichier écrit en : "+path;
     })
 }
 
