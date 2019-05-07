@@ -39,13 +39,19 @@ def __pdf_base64_image(pdf, image, x = None, y = None, w = 0, h = 0):
     # Prepare the image to be saved
     image = image[image.index('base64')+7:]
     image += "=" * ((4 - len(image) % 4) % 4)
+    image_data = a2b_base64(image)
 
-    temp_file = '.temp' + str(__pdf_base64_image.counter) + '.png'
+    temp_file = '.temp' + str(__pdf_base64_image.counter)
+    if image_data[0:4] == b'\x89PNG':
+        temp_file += '.png'
+    else:
+        temp_file += '.jpg'
+
     __pdf_base64_image.counter += 1
 
     # Save the image in a temporary file
     with open(temp_file, 'wb') as fd:
-        fd.write(a2b_base64(image))
+        fd.write(image_data)
 
     # Write the image to the PDF
     pdf.image(temp_file, x, y, w, h)
