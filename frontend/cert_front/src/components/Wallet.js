@@ -1,24 +1,42 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import {Grid, Typography, Paper,Button, TextField} from '@material-ui/core';
+import {Grid, Typography,Button} from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import AddIcon from '@material-ui/icons/Add';
 import Navbar from './Navbar';
 import axios from 'axios';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-	
+
+
+/*const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+    },
+    secondary: {
+      light: '#03a9f4',
+      main: '#03a9f4',
+      dark: '#03a9f4',
+    },
+  },
+});*/
+
+
+
 const CustomTableCell = withStyles(theme => ({
 	  head: {
-		backgroundColor: theme.palette.common.black,
+		backgroundColor: "#7c7c7c",
 		color: theme.palette.common.white,
 		fontSize: 18,
 	  },
@@ -148,8 +166,8 @@ class Wallet extends Component {
 							</Fab> 
 						 </CustomTableCell>
 						 <CustomTableCell align="right">
-						 <Button variant="contained" color="default" className={classes.button} onClick={this.download.bind(this,diploma[0])}>
-							<CloudUploadIcon className={classes.rightIcon} />
+						 <Button color="default" className={classes.button} onClick={this.download.bind(this,diploma[0])}>
+							<SaveAltIcon/>
 						 </Button>
 				         </CustomTableCell>
 						</TableRow>
