@@ -51,6 +51,26 @@ class Wallet extends Component {
     diplomas: []
   } 
   
+  download(key, e) {
+	let date = new Date();
+	let filename = "diploma"+date.getFullYear()+"_"+(date.getMonth()+1)+"_"+(date.getDay()+1)+".json";
+    let contentType = "application/json;charset=utf-8;";
+    let diploma_to_download ;
+	for (let i=0; i<this.state.diplomas.length ; i++){
+		if(this.state.diplomas[i][0]==key){
+			console.log( this.state.diplomas[i][1]);
+			diploma_to_download =  this.state.diplomas[i][1];
+			break
+		}
+	}
+	var a = document.createElement('a');
+    a.download = filename;
+    a.href = 'data:' + contentType + ',' + encodeURIComponent(JSON.stringify(diploma_to_download));
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
   
   componentWillMount() {
 	  axios({'url':'http://localhost:8000/api/wallet', 'method':'get', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')}})
@@ -61,6 +81,8 @@ class Wallet extends Component {
       					alert("Une erreur est survenue!")
 				})
   }
+  
+  
 
 	
   
@@ -98,7 +120,7 @@ class Wallet extends Component {
 							</Fab> 
 						 </CustomTableCell>
 						 <CustomTableCell align="right">
-						 <Button variant="contained" color="default" className={classes.button}>
+						 <Button variant="contained" color="default" className={classes.button} onClick={this.download.bind(this,diploma[0])}>
 							<CloudUploadIcon className={classes.rightIcon} />
 						 </Button>
 				         </CustomTableCell>

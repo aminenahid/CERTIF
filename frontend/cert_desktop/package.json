@@ -1,0 +1,14 @@
+{
+  "name": "cert_desktop",
+  "version": "1.0.0",
+  "description": "GUI for Certificatif python desktop app ",
+  "main": "index.js",
+  "author": "H4404 2018-2019",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^5.0.1"
+  },
+  "scripts": {
+    "start": "electron ."
+  }
+}
