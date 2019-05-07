@@ -21,10 +21,16 @@ const styles = theme => ({
 class Verify extends Component {
   state={
     file:null,
-    status:"noFile"
+    status:"noFile",
+    pdf:null
   } 
   fileHandler = (uploadedFile)=>{
-    this.setState({'file':uploadedFile,status:'fileNotVerif'})
+    uploadedFile = decodeURIComponent(escape(uploadedFile));
+    this.setState({'file':uploadedFile,status:'fileNotVerif'});
+    axios.post('http://localhost:8000/api/certificate_file_pdf', {'diploma' : JSON.parse(this.state.file)})
+    .then(res => {
+      this.setState({'pdf':res.data});
+    });
   }
   verifyFile = () => {
     axios.post('http://localhost:8000/api/verify_certificate', {'diploma' : JSON.parse(this.state.file)})
@@ -47,16 +53,10 @@ class Verify extends Component {
 
   const { classes } = this.props;
   let dropzone;
-  if(!this.state.file){
+  if(!this.state.pdf){
     dropzone=<Dropzone action={this.fileHandler} />
   } else {
-    let theFile=JSON.parse(this.state.file);
-    theFile.image=null;
-    theFile.badge.image=null
-    theFile.badge.issuer.image=null
-    theFile.badge.signatureLines[0].image=null
-    console.log(theFile)
-    dropzone=<Paper className={classes.paper}><Typography variant="body1">{JSON.stringify(theFile)}</Typography></Paper>
+    dropzone=<object data={ 'data:application/pdf;base64,' + this.state.pdf } style={{width:'100%', height:'400px'}}></object>
   }
   return (
     <div className={classes.root}>
@@ -72,7 +72,7 @@ class Verify extends Component {
           <br/>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button variant="contained" color="primary" disabled={this.state.status==="noFile"} onClick={()=>{this.setState({'file':null,'status':'noFile'})}}>Changer diplome</Button>
+              <Button variant="contained" color="primary" disabled={this.state.status==="noFile"} onClick={()=>{this.setState({'file':null,'status':'noFile',pdf:null})}}>Changer diplome</Button>
             </Grid>
           </Grid>
         </Grid>
