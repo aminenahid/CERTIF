@@ -32,4 +32,5 @@ frontend/cert_desktop/.env.test.local
 frontend/cert_desktop/.env.production.local
 frontend/cert_desktop/npm-debug.log*
 frontend/cert_desktop/yarn-debug*
-
+frontend/cert_desktop/yarn-error.log*
+frontend/cert_desktop/yarn.lock
