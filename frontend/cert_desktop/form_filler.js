@@ -1,10 +1,12 @@
 var uniqueFields;
 var uniqueIds;
+var fileString;
 
 function generateForm(){
     //Access the file and find every possible element
     var file =document.getElementById("filepath").files[0];
     console.log(file);
+    path=file.path;
     if (file){
         getAsText(file);
     } else {
@@ -39,22 +41,29 @@ function updateProgress(evt) {
 
 function loaded(evt) {
     // Obtain the read file data
-    var fileString = evt.target.result;
+    fileString = evt.target.result;
+    document.getElementById("message").style.display="none";
     // We need to find every possible field that is needed.
     var result=fileString.match(/[*].+?[*]/g);
     uniqueIds=Array.from(new Set(result));
+
     uniqueFields=uniqueIds.slice();
     for(var i=0; i<uniqueFields.length; i++){
         uniqueFields[i]=uniqueFields[i].substr(2, uniqueFields[i].length-4);
     }
+    for(var i=0; i<uniqueIds.length; i++){
+        uniqueIds[i]=uniqueIds[i].replace(/[*|]/g,"[*|]");
+    }
     var zoneFormulaire=document.getElementById("form_template");
     zoneFormulaire.innerHTML="<form id=\"diploma_form\" action=\"\">";
     uniqueFields.forEach(element => {
-        text=element.replace(/_/g, " ");
-        text=text.charAt(0)+text.slice(1).toLowerCase();
-        zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" type=\""+getType(text)+"\"> </div>";
+        if (element!="TODAY"){
+            text=element.replace(/_/g, " ");
+            text=text.charAt(0)+text.slice(1).toLowerCase();
+            zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" id=\""+element+"\"type=\""+getType(text)+"\"> </div>";
+        }
     });
-    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><input class=' btn' type=\"button\" onclick=\"generateDiplomaJSON();\" value=\"Générer le diplôme\"></div>"
+    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><input id='generateButton' class=' btn' type=\"file\" onchange=\"generateDiplomaJSON();\" value=\"Générer le diplôme\" webkitdirectory directory></div>"
     zoneFormulaire.innerHTML+="</form>";
     return uniqueFields;
 }
@@ -68,43 +77,86 @@ function errorHandler(evt) {
 function getType(text){
     if (text.search(/date/i)!=-1){
         return "date";
-    } else if (text.search(/number/i)!=-1 || text.search(/no/i)!=-1){
+    } else if (text.search(/number/i)!=-1){
         return "number";
     }
     return "text";
 }
 
 function generateDiplomaJSON(){
+    console.log(document.getElementById("generateButton"));
+    path=document.getElementById("generateButton").files[0].path;
+
     console.log(uniqueFields);
     console.log(uniqueIds);
     var ok=true;
     for (var i=0; i<uniqueFields.length; i++){
-        ok=ok&&is_valid(document.getElementById(uniqueFields[i]).value);
+        if(uniqueFields[i]=="TODAY"){
+            continue;
+        }
+        var ret=is_valid(document.getElementById(uniqueFields[i]).value, getType(uniqueFields[i]));
+        console.log(uniqueFields[i]);
+        console.log(ret);
+        ok=ok&&ret;
     }
-    console.log(ok);
+    if (!ok){
+        document.getElementById("form_info").innerHTML="<p>Le formulaire est incomplet ou mal rempli</p>";
+        return false;
+    }
+    newFileString=fileString.slice();
+    var prenom, nom;
+    for (var i =0; i<uniqueFields.length; i++){
+        if(uniqueFields[i]!="TODAY"){
+            var value=document.getElementById(uniqueFields[i]).value;
+            var regexp = new RegExp(uniqueIds[i], "gi");
+            newFileString=newFileString.replace(regexp, value);
+
+            if (uniqueFields[i]=="NOMS"){
+                nom=value;
+            } else if (uniqueFields[i]=="PRENOMS"){
+                prenom=value;
+            }
+        } else {
+            today = new Date();
+            var regexp=new RegExp(uniqueIds[i], "gi");
+            newFileString=newFileString.replace(regexp, today.toISOString().replace(/Z/,"+00:00"));
+        }
+    }
+
+    const fs=require('fs');
+    path=path+"/diplome_"+nom+"_"+prenom+".json";
+    console.log(path);
+    fs.writeFile(path, newFileString, function(err) {
+        if (err){
+            document.getElementById("form_info").innerHTML=err;
+            return;
+        }
+        document.getElementById("form_info").innerHTML="Fichier écrit en : "+path;
+    })
 }
 
-function is_valid(value){
-    switch(getType(value)){
-        case "text":
-            return value.replace(/ /g,"")!="" && !value===null;
-        case "number":
-            try{
-                number=Number(value);
-                return number>0;
-            } catch(err){
-                return false;
-            }
-            break;
-        case "date":
-            try{
-                date=new Date(value);
-                return true;
-            } catch(err){
-                return false;
-            }
-            break;
-        default:
+function is_valid(value, t){
+    if (value===null){
+        return false;
+    }
+    if (t=="text"){
+        return value.replace(/ /g,"")!="";
+    } else if (t=="number"){
+        try{
+            number=Number(value);
+            return number>0;
+        } catch(err){
             return false;
+        }
+    } else if (t=="date"){
+        try{
+            date=new Date(value);
+            return true;
+        } catch(err){
+            return false;
+        }
+
+    } else {
+        return false;
     }
 }
