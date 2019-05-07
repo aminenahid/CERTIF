@@ -63,3 +63,22 @@ const mainMenuTemplate =[
         }
     }
 ];
+if(process.platform =='darwin'){
+    //If mac, add empty item to menu for clean look
+    mainMenuTemplate.unshift({});
+}
+
+if(process.env.NODE_ENV !=='production'){
+    mainMenuTemplate.push({
+        label: 'Developer Tools',
+        click(item, mainWindow){
+            mainWindow.toggleDevTools();
+        }
+    });
+    mainMenuTemplate.push({
+        label: 'Referesh',
+        click(item, mainWindow){
+            mainWindow.reload();
+        }
+    })
+}
