@@ -12,6 +12,7 @@ import SignUp from './components/SignUp'
 import Forgotten from './components/Forgotten'
 import Navbar from './components/Navbar'
 import AddDiploma from './components/AddDiploma'
+import Wallet from './components/Wallet'
 import { BrowserRouter, Route } from 'react-router-dom'
 
 
@@ -30,6 +31,7 @@ class App extends Component {
          <Route path='/sign_out' component={SignOut}/>
          <Route path='/forgotten' component={Forgotten}/>
          <Route path='/addDiploma' component={AddDiploma}/>
+         <Route path='/wallet' component={Wallet}/>
       </div>
       </BrowserRouter>
     ); 

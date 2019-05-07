@@ -33,6 +33,7 @@ urlpatterns = [
     url('api/signup', signup),
     url('api/user', get_user_name),
     url('api/add', upload_diploma),
+    url('api/wallet', look_for_my_diplomas),
 	#url('api/verify_certificate', verify_certificate),
 
     path('admin/', admin.site.urls)

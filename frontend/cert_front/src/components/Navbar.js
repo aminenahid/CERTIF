@@ -44,7 +44,10 @@ class ButtonAppBar extends Component {
               CERT'<span className="text-bold">IF</span>
             </Typography>
             <Button component={NavLink} to="/verify" color="inherit">VERIFIER UN DIPLOME</Button>
-            {this.props.connected ? <Button component={NavLink} to="/addDiploma" color="inherit">AJOUTER UN DIPLOME</Button> : <span></span>}
+            {this.props.connected ? <Button component={NavLink} to="/addDiploma" color="inherit">AJOUTER UN DIPLOME</Button>
+				 : <span></span>}
+			{this.props.connected ? <Button component={NavLink} to="/wallet" color="inherit">MES DIPLOMES</Button>
+				 : <span></span>}
             {(!this.props.connected || this.props.connected===false)? <Button  variant="contained" component={NavLink} to="/sign_in">CONNEXION</Button> 
             : <Button  variant="contained" aria-owns={anchorEl ? 'simple-menu' : undefined}
               aria-haspopup="true" onClick={this.handleClick}>{sessionStorage.getItem('user_name')}</Button>}
