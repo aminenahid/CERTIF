@@ -86,7 +86,8 @@ def __default_footer(diploma, pdf, params):
     pdf.set_y(pdf.get_y() + 2)
 
     pdf.set_font_size(11)
-    issued = datetime.strptime(__get_field(diploma, params['footer_date']), '%Y-%m-%dT%H:%M:%S.%f%z')
+    issued = __get_field(diploma, params['footer_date'])
+    issued = datetime.strptime(issued[:issued.index('+')], '%Y-%m-%dT%H:%M:%S.%f')
     pdf.cell(0, 8, params['footer_pre_date'] + ' ' + issued.strftime(params['footer_date_format']), 0, 1, 'R')
 
     pdf.set_y(pdf.get_y() + 4)
