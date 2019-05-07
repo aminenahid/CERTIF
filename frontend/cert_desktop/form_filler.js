@@ -63,7 +63,15 @@ function loaded(evt) {
             zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" id=\""+element+"\"type=\""+getType(text)+"\"> </div>";
         }
     });
-    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><input id='generateButton' class=' btn' type=\"file\" onchange=\"generateDiplomaJSON();\" value=\"Générer le diplôme\" webkitdirectory directory></div>"
+    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><div class='file-field input-field'>\
+    <div class='btn'>\
+        <span>Dossier d'enregistrement</span>\
+        <input id='generateButton' class='btn' type='file' onchange='generateDiplomaJSON();' webkitdirectory directory>\
+    </div>\
+    <div class = 'file-path-wrapper'>\
+    <input class = 'file-path validate' type = 'text' placeholder = 'Aucun dossier choisi' />\
+    </div>\
+    </div></div>"
     zoneFormulaire.innerHTML+="</form>";
     return uniqueFields;
 }
@@ -77,7 +85,7 @@ function errorHandler(evt) {
 function getType(text){
     if (text.search(/date/i)!=-1){
         return "date";
-    } else if (text.search(/number/i)!=-1){
+    } else if (text.search(/number/i)!=-1 || text.search(/numero/i)!=-1){
         return "number";
     }
     return "text";
