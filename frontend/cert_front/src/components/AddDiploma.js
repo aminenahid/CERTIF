@@ -75,7 +75,7 @@ class AddDiploma extends Component {
 	  return (
 		<div className={classes.root}>
 		<Navbar connected={sessionStorage.getItem('token')!==null} />
-		  <Grid container justify="center" spacing={24}>
+		  <Grid container justify="center" >
 			<Grid item>
 			  <br/>
 			  <Typography variant="h3" className={classes.h3} color="primary">AJOUTER UN DIPLOME</Typography>
