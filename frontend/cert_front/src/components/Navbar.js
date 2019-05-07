@@ -3,9 +3,11 @@ import {withRouter, NavLink} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles, AppBar, Toolbar, Typography, Button, Menu, MenuItem } from '@material-ui/core';
-
-
-
+import Popper from '@material-ui/core/Popper';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import MenuList from '@material-ui/core/MenuList';
 
 const styles = {
   root: {
@@ -50,11 +52,21 @@ class ButtonAppBar extends Component {
 			{this.props.connected ? <Button component={NavLink} to="/wallet" color="inherit">MES DIPLOMES</Button>
 				 : <span></span>}
             {(!this.props.connected || this.props.connected===false)? <Button  variant="contained" component={NavLink} to="/sign_in">CONNEXION</Button> 
-            : <Button  variant="contained" aria-owns={anchorEl ? 'simple-menu' : undefined}
-              aria-haspopup="true" onClick={this.handleClick}>{sessionStorage.getItem('user_name')}</Button>}
-            <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
-              <MenuItem component={NavLink} to="/sign_out" >Déconnexion</MenuItem>
-            </Menu>
+            : <div><Button  variant="contained" aria-owns={anchorEl ? 'simple-menu' : undefined}
+              aria-haspopup="true" onClick={this.handleClick}>{sessionStorage.getItem('user_name')}</Button>
+              <Popper open={Boolean(anchorEl)} anchorEl={this.anchorEl} transition disablePortal>
+                {({ TransitionProps, placement }) => (
+                  <Grow {...TransitionProps} id="simple-menu" style={{ transformOrigin: 'center bottom' }}>
+                    <Paper>
+                      <ClickAwayListener onClickAway={this.handleClose}>
+                        <MenuList>
+                          <MenuItem component={NavLink} to="/sign_out">Déconnexion</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+            </Popper></div>}
           </Toolbar>
         </AppBar>
       </div>
