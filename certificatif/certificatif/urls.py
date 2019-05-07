@@ -35,5 +35,7 @@ urlpatterns = [
     url('api/add', upload_diploma),
 	#url('api/verify_certificate', verify_certificate),
 
+    url('api/certificate_file_pdf', certificate_file_pdf),
+
     path('admin/', admin.site.urls)
 ]
