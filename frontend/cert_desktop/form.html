@@ -2,11 +2,22 @@
 
 <html>
     <head>
-        <title>Saisie d'un diplome</title>
+        <title>CERT'IF</title>
         <meta charset="utf8"/>
+        <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     </head>
     <body>
-        <h1>Saisie d'un diplôme</h1>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper red darken-3">
+                    <a class="brand-logo left">PUBLICATION D'UN DIPLÔME</a>
+                </div>
+            </nav>
+        </div>         
         <form id="formulaire" action="">
             Identité :
             <select id="identity" name="identity">
@@ -18,7 +29,7 @@
             Nom(s) : 
             <input type="text" id="lastname" name="lastname"><br>
             Date de naissance
-            <input type="date" id="birthday" name="birthday"><br>
+            <input type="date" class="datepicker red darken-3" id="birthday" name="birthday"><br>
             Ville de naissance :
             <input type="text" id="bcity" name="bcity"><br>
             Département de naissance :
@@ -40,10 +51,16 @@
                 <option value="IF">Informatique</option>
                 <option value="SGM">Science et Génie des Matériaux</option>
             </select><br>
-            <input type="button" value="Générer" onclick="complete_form();">
+            <input type="button" class="btn red darken-3" value="Générer" onclick="complete_form();">
         </form>
-        <button type="button"><a href="www.google.com">Continuer</a></button>
+        <button class="btn red darken-3" value="Générer"type="button"><a class="white-text">Continuer</a></button>
         <script src="../js/formulaire_diplome.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.datepicker');
+            var instances = M.Datepicker.init(elems, options);
+        });
+    </script>
 </html>
