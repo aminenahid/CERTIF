@@ -22,10 +22,16 @@
           </nav>
       </div>         
     <div class="row center-align">
-      <div class="col s12 center-align">
-        <p>Bonjour, merci de donner le chemin d'accès vers le fichier template.json de vos diplômes</p>
-      </div>
+      <div class="col s10 offset-s1 center-align">
+        <div class= "card red lighten-2" id="message">
+          <div class="card-content white-text">
+              <p>Bonjour, merci de donner le chemin d'accès vers le fichier template.json de vos diplômes</p>
+          </div>
+        </div>
 
+
+      </div>
+      
         <form>
           <div class="col s10 offset-s1 left-align">
             <div class = "file-field input-field">
@@ -33,14 +39,14 @@
                    <span>Choisir un fichier</span>
                    <input type = "file"  name="filepath" id="filepath" onchange="generateForm()"/>
                 </div>
-                
+
                 <div class = "file-path-wrapper">
                    <input class = "file-path validate" type = "text"
                       placeholder = "Aucun fichier choisi" />
                 </div>
              </div>
 
-          
+             <div class="divider"></div>
           </div> 
         </form>  
     </div>

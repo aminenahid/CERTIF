@@ -43,10 +43,10 @@ app.on('window-all-closed', function () {
 //create menu template
 const mainMenuTemplate =[
     {
-        label :'Configuration',
+        label :'Accueil',
         click(){
             mainWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'settings.html'),
+                pathname: path.join(__dirname, 'index.html'),
                 protocol: 'file:',
                 slashes: true
             }));
@@ -76,7 +76,7 @@ if(process.env.NODE_ENV !=='production'){
         }
     });
     mainMenuTemplate.push({
-        label: 'Referesh',
+        label: 'Refresh',
         click(item, mainWindow){
             mainWindow.reload();
         }

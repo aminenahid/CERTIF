@@ -93,15 +93,17 @@ class SignIn extends Component {
                                 <Grid item xs={10}>
                                 <TextField id="password" type="password" label="Mot de passe" className={classes.textField}
                                             value={this.state.password} onChange={this.handleChange('password')}/>
+                                <br/>
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Button color="primary" onClick={this.redirect}>Mot de passe oublié ?</Button>
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Button variant="contained" color="primary" onClick={this.login}>Connexion</Button>
+                                    <br/><br/>
                                 </Grid>
-                                <Grid item xs={12}>
-                                <Typography color="grey" variant="h6">NOUVEL UTILISATEUR?
+                                <Grid item xs={12} style={{ backgroundColor:"#e5e5e5"}}>
+                                <Typography variant="h6" style={{ color:"#000000"}}>Nouvel utilisateur?
                                     <Button onClick={this.redirect_signup}>Inscris-toi</Button></Typography>
                                 </Grid>
                             </Grid>
