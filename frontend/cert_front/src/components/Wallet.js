@@ -10,11 +10,14 @@ import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import AddIcon from '@material-ui/icons/Add';
-import Navbar from './Navbar'
-import axios from 'axios'
-import {MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import Navbar from './Navbar';
+import axios from 'axios';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
 
-const theme = createMuiTheme({
+
+/*const theme = createMuiTheme({
   palette: {
     primary: {
       light: '#757ce8',
@@ -27,11 +30,10 @@ const theme = createMuiTheme({
       dark: '#03a9f4',
     },
   },
-});
+});*/
 
 
 
-	
 const CustomTableCell = withStyles(theme => ({
 	  head: {
 		backgroundColor: "#7c7c7c",
@@ -59,13 +61,19 @@ const styles = theme => ({
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.background.default,
     },
-  },
+	},
+	
+	dialogPdf: {
+		height: '90vh'
+	}
 });
 
 class Wallet extends Component {
   state={
-    diplomas: []
-  } 
+		diplomas: [],
+		pdf: null,
+		diplomaTitle: ''
+  }
   
   download(key, e) {
 	let date = new Date();
@@ -98,14 +106,36 @@ class Wallet extends Component {
 				})
   }
   
-  
+  showPdf(key, e) {
+		for(let i = 0; i < this.state.diplomas.length; i++) {
+			if(this.state.diplomas[i][0] == key) {
+				axios.post('http://localhost:8000/api/certificate_file_pdf', {'diploma' : this.state.diplomas[i][1]})
+				.then(res => {
+					this.setState({ pdf: res.data, diplomaTitle: this.state.diplomas[i][1].badge.name });
+				});
+				break;
+			}
+		}
+	}
 
-	
+	hidePdf() {
+		this.setState({ pdf: null });
+	}
   
   render(){
 	  const { classes } = this.props;
 		 return ( 
 		  <div className={classes.root}>
+
+			<Dialog open={this.state.pdf !== null} onClose={this.hidePdf.bind(this)} classes={{ paper: classes.dialogPdf }} fullWidth maxWidth="xl">
+					<DialogTitle onClose={this.hidePdf.bind(this)}>
+						{ this.state.diplomaTitle }
+          </DialogTitle>
+					<DialogContent>
+						<object data={ 'data:application/pdf;base64,' + this.state.pdf } style={{ width: '100%', height: '100%' }}></object>
+					</DialogContent>
+			</Dialog>
+
 			<Navbar connected={sessionStorage.getItem('token')!==null} />
 			  <Grid container justify="center" >
 				<Grid item xs={10}>
@@ -131,7 +161,7 @@ class Wallet extends Component {
 						  <CustomTableCell align="right">{diploma[1].badge.issuer.name}</CustomTableCell>
 						  <CustomTableCell align="right">{diploma[1].issuedOn.split('-')[0]}</CustomTableCell>
 						  <CustomTableCell align="right">
-							<Fab color="primary" aria-label="Add" size="small">
+							<Fab color="primary" aria-label="Add" size="small" onClick={this.showPdf.bind(this, diploma[0])}>
 								<AddIcon />
 							</Fab> 
 						 </CustomTableCell>

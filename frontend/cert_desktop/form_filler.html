@@ -18,13 +18,30 @@
               </div>
           </nav>
       </div>         
-    
-    <p>Bonjour, merci de donner le chemin d'accès vers le fichier template.json de vos diplômes</p>
-    <form>
-      <input type="file" name="filepath" id="filepath">
-      <input type="button" value="Générer le formulaire" onclick="generateForm()">
-    </form>
-    <div id="form_template">
+    <div class="row center-align">
+      <div class="col s12 center-align">
+        <p>Bonjour, merci de donner le chemin d'accès vers le fichier template.json de vos diplômes</p>
+      </div>
+
+        <form>
+          <div class="col s10 offset-s1 left-align">
+            <div class = "file-field input-field">
+                <div class = "btn">
+                   <span>Choisir un fichier</span>
+                   <input type = "file"  name="filepath" id="filepath" onchange="generateForm()"/>
+                </div>
+                
+                <div class = "file-path-wrapper">
+                   <input class = "file-path validate" type = "text"
+                      placeholder = "Aucun fichier choisi" />
+                </div>
+             </div>
+
+          
+          </div> 
+        </form>  
+    </div>
+    <div class="row" id="form_template">
     </div>
     <script src="https://www.w3.org/TR/2018/WD-FileAPI-20181106/"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
