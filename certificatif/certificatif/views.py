@@ -15,6 +15,9 @@ from rest_framework.status import (
 )
 import json
 import random
+from certificatif.pdfdiploma import pdf_diploma_from_mem_to_mem
+from django.http import HttpResponse
+from binascii import b2a_base64
 
 @api_view(["POST"])
 def login(request):
@@ -115,3 +118,16 @@ def look_for_my_diplomas(request):
 	student = User.objects.get(pk=request.user.id)
 	portfolio = Diploma.objects.filter(student=student).values_list('id','diploma_file')
 	return Response({'diplomas': portfolio}, status=HTTP_200_OK)
+
+@api_view(["POST"])
+def certificate_file_pdf(request):
+	diploma = request.data.get("diploma")
+
+	if diploma is None:
+		return Response({'error': 'Please provide a diploma'}, status=HTTP_400_BAD_REQUEST)
+
+	pdf = pdf_diploma_from_mem_to_mem(diploma)
+
+	response = HttpResponse(b2a_base64(pdf), content_type='application/pdf')
+	response['Content-Disposition'] = 'inline;filename=diploma.pdf'
+	return response
