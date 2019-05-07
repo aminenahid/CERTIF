@@ -2,6 +2,8 @@ import React, {useCallback} from 'react'
 import {useDropzone} from 'react-dropzone'
 import {Paper} from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Fab from '@material-ui/core/Fab';
 
 
 const styles = theme => ({
@@ -32,7 +34,11 @@ function MyDropzone(props) {
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      <Paper className={classes.paper}><p id="dropzone-content">Importer un fichier</p></Paper>
+      <Paper className={classes.paper}><p id="dropzone-content">Importer un fichier</p>
+      <Fab color="secondary" size="medium">
+		<CloudUploadIcon />
+	  </Fab>	
+      </Paper>
     </div>
   )
 }
