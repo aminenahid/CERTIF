@@ -52,9 +52,9 @@ function loaded(evt) {
     uniqueFields.forEach(element => {
         text=element.replace(/_/g, " ");
         text=text.charAt(0)+text.slice(1).toLowerCase();
-        zoneFormulaire.innerHTML+="<br>"+text+" : <input name=\""+element+"\" type=\""+getType(text)+"\">";
+        zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" type=\""+getType(text)+"\"> </div>";
     });
-    zoneFormulaire.innerHTML+="<br><input type=\"button\" onclick=\"generateDiplomaJSON();\" value=\"Générer le diplôme\">"
+    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><input class=' btn' type=\"button\" onclick=\"generateDiplomaJSON();\" value=\"Générer le diplôme\"></div>"
     zoneFormulaire.innerHTML+="</form>";
     return uniqueFields;
 }
