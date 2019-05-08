@@ -84,6 +84,7 @@ class Wallet extends Component {
 		if(this.state.diplomas[i][0]==key){
 			console.log( this.state.diplomas[i][1]);
 			diploma_to_download =  this.state.diplomas[i][1];
+			filename = this.state.diplomas[i][1].badge.name+"_"+this.state.diplomas[i][1].recipientProfile.name+"_"+this.state.diplomas[i][1].issuedOn.split('-')[0];
 			break
 		}
 	}
