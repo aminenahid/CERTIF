@@ -18,6 +18,7 @@ import random
 from certificatif.pdfdiploma import pdf_diploma_from_mem_to_mem
 from django.http import HttpResponse
 from binascii import b2a_base64
+import certificatif.verifier as verifier
 
 @api_view(["POST"])
 def login(request):
@@ -97,7 +98,8 @@ def verify_certificate(request):
 			return Response({'error': 'The issuing university was not allowed to issue such a diploma on the issue date'}, status=HTTP_200_OK)
 
 		# Verify the diploma in the Blockchain
-		is_valid = uav.verifyOnBlockChain_v2(diploma)
+		is_valid = verifier.verifyOnBlockChain(diploma)
+		return Response({'is_valid': is_valid }, status=HTTP_200_OK)
 		return Response({'is_valid': is_valid, 'university': univ.short_name }, status=HTTP_200_OK)
 	except Exception as error:
 		return Response({'is_valid': False, 'error': "Invalid university: "+str(error)}, status=HTTP_200_OK)
