@@ -1,15 +1,22 @@
-FROM hex4404/certif_back:1.4
-MAINTAINER Hex4404
+FROM seegno/bitcoind:0.13-alpine
+MAINTAINER Kim Duffy "kimhd@mit.edu"
 
-COPY /Blockcert_linker /blockcert
-COPY /certificatif /certificatif
-
-RUN apk --update add postgresql-dev \
-	&& pip3 install -r /certificatif/requirements.txt \
-	&& sed -i.bak s/'\.\.\/Blockcert_linker\/'/'\/blockcert\/'/g /certificatif/certificatif/views.py \
-	&& pip3 install django-cors-headers
-	
-EXPOSE 5432
-EXPOSE 8000
+RUN apk add --update \
+        bash \
+        ca-certificates \
+        curl \
+        gcc \
+        gmp-dev \
+        libffi-dev \
+        libressl-dev \
+        linux-headers \
+        make \
+        musl-dev \
+        python \
+        python3 \
+        python3-dev \
+        tar \
+    && mkdir ~/.bitcoin \
+    && echo $'rpcuser=foo\nrpcpassword=bar\nrpcport=8332\nregtest=1\nrelaypriority=0\nrpcallowip=127.0.0.1\nrpcconnect=127.0.0.1\n' > /root/.bitcoin/bitcoin.conf
 
 ENTRYPOINT bitcoind -daemon && bash
