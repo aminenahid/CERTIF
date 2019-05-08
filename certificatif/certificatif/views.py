@@ -49,7 +49,7 @@ def logout(request):
 @api_view(["POST"])
 def signup(request):
 
-	email = request.data.get("email")
+	email = request.data.get("email").lower()
 	username = request.data.get("username")
 	password = request.data.get("password")
 	given_names = request.data.get("given_names")
@@ -131,3 +131,16 @@ def certificate_file_pdf(request):
 	response = HttpResponse(b2a_base64(pdf), content_type='application/pdf')
 	response['Content-Disposition'] = 'inline;filename=diploma.pdf'
 	return response
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated, ))
+def delete_diploma(request):
+	student = User.objects.get(pk=request.user.id)
+	diploma_id = request.data.get("id")
+	diploma = Diploma.objects.filter(pk=diploma_id)
+	if(diploma.student == student):
+		diploma.delete()
+		return Response({'delete_status': 'ok'}, status=HTTP_200_OK)
+	else:
+		return Response({'delete_status': 'notOk'}, status=HTTP_200_OK)
+	
