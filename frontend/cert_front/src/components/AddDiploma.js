@@ -28,12 +28,23 @@ class AddDiploma extends Component {
     pdf:null
   } 
   fileHandler = (uploadedFile)=>{
-    uploadedFile = decodeURIComponent(escape(uploadedFile));
-    this.setState({'file':uploadedFile,status:'fileNotVerif'});
-    axios.post('http://localhost:8000/api/certificate_file_pdf', {'diploma' : JSON.parse(this.state.file)})
+    
+    let diploma = null;
+    try{
+		uploadedFile = decodeURIComponent(escape(uploadedFile));
+		diploma=JSON.parse(uploadedFile);
+	}
+	catch(error){
+		this.setState({'status':"fileNotValid"});
+		return
+	}
+    this.setState({'file':uploadedFile});
+    axios.post('http://localhost:8000/api/certificate_file_pdf', {'diploma' : diploma})
     .then(res => {
-      this.setState({'pdf':res.data});
-    });
+      this.setState({'pdf':res.data, 'status':'validFile'});
+    }).catch(e => {
+      this.setState({'status':'noFile', 'file':null});
+    })
   }
   
   add= () => {
@@ -69,7 +80,10 @@ class AddDiploma extends Component {
 		confirmZone=<Typography variant="body1"  style={{ color: "#086d08"}}><b>Votre diplome a bien été enregistré</b></Typography>
 	  }else if(this.state.status==="notOk"){
 		confirmZone=<Typography variant="body1" color="primary"><b>Erreur. Votre diplome n'a pas été enregistré.</b></Typography>
-	  }else{
+	  }else if(this.state.status==="fileNotValid"){
+		confirmZone=<Typography variant="body1" color="primary"><b>Erreur. Votre fichier n'est pas valide.</b></Typography>
+	  }
+	  else{
 		confirmZone=<p></p>
 	  }
 	  return (
@@ -88,10 +102,10 @@ class AddDiploma extends Component {
 			<Grid item xs={9}>
 			  <Grid container direction="row" justify="flex-end" spacing={24}>
 				<Grid item>
-				  <Button variant="contained" color="primary" disabled={this.state.status==="noFile"} onClick={this.add}>Enregistrer</Button>
+				  <Button variant="contained" color="primary" disabled={(this.state.status==="noFile" || this.state.status==="fileNotValid" )} onClick={this.add}>Enregistrer</Button>
 				</Grid>
 				<Grid item>
-				  <Button variant="contained" color="primary" disabled={this.state.status==="noFile"} onClick={()=>{this.setState({'file':null,'status':'noFile',pdf:null})}}>Changer fichier</Button>
+				  <Button variant="contained" color="primary" disabled={(this.state.status==="noFile" || this.state.status==="fileNotValid")} onClick={()=>{this.setState({'file':null,'status':'noFile',pdf:null})}}>Changer fichier</Button>
 				</Grid>
 			  </Grid>
 			</Grid>
