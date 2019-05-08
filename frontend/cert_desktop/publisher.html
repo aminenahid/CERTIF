@@ -6,18 +6,16 @@
 
         <!-- Compiled and minified JavaScript -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <script src="https://www.w3.org/TR/2018/WD-FileAPI-20181106/"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="./form_filler.js"></script>
+        <script src="./publish.js"></script>
      
     <meta charset="UTF-8">
-    <title>CERT'IF - Saisie d'un diplôme</title>
+    <title>CERT'IF - Publication d'un diplôme</title>
   </head>
   <body>
       <div class="navbar-fixed">
           <nav>
               <div class="nav-wrapper red darken-3">
-                  <a class="brand-logo left">GENERATION D'UN DIPLÔME</a>
+                  <a class="brand-logo left">PUBLICATION D'UN DIPLÔME</a>
               </div>
           </nav>
       </div>         
@@ -25,7 +23,7 @@
       <div class="col s10 offset-s1 center-align">
         <div class= "card red lighten-2" id="message">
           <div class="card-content white-text">
-              <p>Bonjour, merci de donner le chemin d'accès vers le fichier template.json de vos diplômes</p>
+              <p>Bonjour, merci de donner le chemin d'accès vers le fichier du diplôme à publier</p>
           </div>
         </div>
 
@@ -37,7 +35,7 @@
             <div class = "file-field input-field">
                 <div class = "btn">
                    <span>Choisir un fichier</span>
-                   <input type = "file"  name="filepath" id="filepath" onchange="generateForm()"/>
+                   <input type = "file"  name="filepath" id="filepath" onchange="publish()"/>
                 </div>
 
                 <div class = "file-path-wrapper">

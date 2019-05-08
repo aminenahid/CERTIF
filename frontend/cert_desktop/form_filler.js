@@ -5,6 +5,10 @@ var fileString;
 function generateForm(){
     //Access the file and find every possible element
     var file =document.getElementById("filepath").files[0];
+    if (file.name.search(/[.]json/)==-1){
+        document.getElementById("form_info").innerHTML="Erreur : ce fichier n'est pas un .json";
+        return false;
+    }
     console.log(file);
     path=file.path;
     if (file){
@@ -46,7 +50,10 @@ function loaded(evt) {
     // We need to find every possible field that is needed.
     var result=fileString.match(/[*].+?[*]/g);
     uniqueIds=Array.from(new Set(result));
-
+    if (uniqueIds.length==0){
+        document.getElementById("form_info").innerHTML="Erreur : ce fichier ne contient pas de données à compléter";
+        return;
+    }
     uniqueFields=uniqueIds.slice();
     for(var i=0; i<uniqueFields.length; i++){
         uniqueFields[i]=uniqueFields[i].substr(2, uniqueFields[i].length-4);
@@ -73,7 +80,7 @@ function loaded(evt) {
     </div>\
     </div></div>"
     zoneFormulaire.innerHTML+="</form>";
-    return uniqueFields;
+    document.getElementById("form_info").innerHTML="";
 }
  
 function errorHandler(evt) {
