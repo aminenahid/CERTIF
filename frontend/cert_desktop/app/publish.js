@@ -13,6 +13,7 @@ function publish() {
 
         let path=file.path;
 
+
         let unsigned_dir = getPathInConfFile('./conf.ini')
 
         console.log(unsigned_dir);
