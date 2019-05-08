@@ -9,13 +9,15 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import Navbar from './Navbar';
 import axios from 'axios';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 
 /*const theme = createMuiTheme({
   palette: {
@@ -72,7 +74,8 @@ class Wallet extends Component {
   state={
 		diplomas: [],
 		pdf: null,
-		diplomaTitle: ''
+		diplomaTitle: '',
+		deleteDiploma: null
   }
   
   download(key, e) {
@@ -121,6 +124,33 @@ class Wallet extends Component {
 	hidePdf() {
 		this.setState({ pdf: null });
 	}
+
+	deleteDiploma(key, e) {
+		this.setState({ deleteDiploma: key });
+	}
+
+	cancelDeleteDiploma() {
+		this.setState({ deleteDiploma: null });
+	}
+
+	confirmDeleteDiploma() {
+		axios.post('http://localhost:8000/api/delete_diploma', {'id' : this.state.deleteDiploma })
+		.then(res => {
+			let diplomas = this.state.diplomas;
+			for(let i = 0; i < diplomas.length; i++) {
+				if(diplomas[i][0] == this.state.deleteDiploma) {
+					diplomas.splice(i, 1);
+					break;
+				}
+			}
+	
+			this.setState({ diplomas: diplomas, deleteDiploma: null });
+		})
+		.catch(e => {
+			alert("Une erreur est survenue!")
+			this.setState({ deleteDiploma: null });
+		});
+	}
   
   render(){
 	  const { classes } = this.props;
@@ -134,6 +164,25 @@ class Wallet extends Component {
 					<DialogContent>
 						<object data={ 'data:application/pdf;base64,' + this.state.pdf } style={{ width: '100%', height: '100%' }}></object>
 					</DialogContent>
+			</Dialog>
+
+			<Dialog open={this.state.deleteDiploma !== null} onClose={this.cancelDeleteDiploma.bind(this)}>
+					<DialogTitle onClose={this.cancelDeleteDiploma.bind(this)}>
+						Confirmer la suppresion
+          </DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+              Etes-vous sûr de vouloir supprimer ce diplôme ? Cette action n'est pas réversible.
+            </DialogContentText>
+					</DialogContent>
+					<DialogActions>
+            <Button onClick={this.cancelDeleteDiploma.bind(this)} color="primary">
+              Non
+            </Button>
+            <Button onClick={this.confirmDeleteDiploma.bind(this)} color="primary">
+              Oui
+            </Button>
+          </DialogActions>
 			</Dialog>
 
 			<Navbar connected={sessionStorage.getItem('token')!==null} />
@@ -152,6 +201,7 @@ class Wallet extends Component {
 						<CustomTableCell align="right">Année</CustomTableCell>
 						<CustomTableCell align="right">Visualiser</CustomTableCell>
 						<CustomTableCell align="right">Télécharger</CustomTableCell>
+						<CustomTableCell align="right">Supprimer</CustomTableCell>
 					  </TableRow>
 					</TableHead>
 					<TableBody>
@@ -169,6 +219,11 @@ class Wallet extends Component {
 						  <CustomTableCell align="right">
 							<Button color="default" className={classes.button} onClick={this.download.bind(this,diploma[0])}>
 								<SaveAltIcon/>
+							</Button>
+				          </CustomTableCell>
+									<CustomTableCell align="right">
+							<Button color="default" className={classes.button} onClick={this.deleteDiploma.bind(this,diploma[0])}>
+								<DeleteIcon/>
 							</Button>
 				          </CustomTableCell>
 						</TableRow>
