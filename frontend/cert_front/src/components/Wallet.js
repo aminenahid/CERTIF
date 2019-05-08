@@ -135,7 +135,8 @@ class Wallet extends Component {
 	}
 
 	confirmDeleteDiploma() {
-		axios.post('http://localhost:8000/api/delete_diploma', {'id' : this.state.deleteDiploma })
+		axios({'url':'http://localhost:8000/api/delete_diploma', 'method':'post', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')},
+			'data': {'id' : this.state.deleteDiploma }})
 		.then(res => {
 			let diplomas = this.state.diplomas;
 			for(let i = 0; i < diplomas.length; i++) {
