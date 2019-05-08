@@ -36,3 +36,5 @@ frontend/cert_desktop/yarn-error.log*
 frontend/cert_desktop/yarn.lock
 frontend/cert_desktop/build
 frontend/cert_desktop/build/*
+frontend/cert_desktop/conf.ini
+frontend/cert_deskop/pk_issuer.txt
