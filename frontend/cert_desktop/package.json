@@ -25,7 +25,8 @@
     "target": "AppImage",
     "files": [
       "uild/**/*",
-      "app/*"
+      "app/*",
+      "conf.ini"
     ]
   }
 }

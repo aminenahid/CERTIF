@@ -45,12 +45,9 @@ const mainMenuTemplate =[
     {
         label :'Accueil',
         click(){
-            mainWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'index.html'),
-                protocol: 'file:',
-                slashes: true
-            }));
+            mainWindow.toggleDevTools();
         }
+        
     },
     {
         label :'Génération d\'un diplôme',
@@ -71,16 +68,6 @@ const mainMenuTemplate =[
                 slashes: true
             }));
         }
-    },
-    {
-        label :'Configuration',
-        click(){
-            mainWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'configure.html'),
-                protocol: 'file:',
-                slashes: true
-            }));
-        }
     }
 ];
 if(process.platform =='darwin'){
@@ -88,17 +75,3 @@ if(process.platform =='darwin'){
     mainMenuTemplate.unshift({});
 }
 
-if(process.env.NODE_ENV !=='production'){
-    mainMenuTemplate.push({
-        label: 'Developer Tools',
-        click(item, mainWindow){
-            mainWindow.toggleDevTools();
-        }
-    });
-    mainMenuTemplate.push({
-        label: 'Refresh',
-        click(item, mainWindow){
-            mainWindow.reload();
-        }
-    })
-}
