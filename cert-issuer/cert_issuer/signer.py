@@ -69,7 +69,7 @@ def check_internet_off(secrets_file_path):
         if internet_on() is False and os.path.exists(secrets_file_path):
             break
         else:
-            print("Turn off your internet and plug in your USB to continue...")
+            logging.warn("Turn off your internet and plug in your USB to continue...")
             time.sleep(10)
     return True
 
@@ -80,6 +80,6 @@ def check_internet_on(secrets_file_path):
         if internet_on() is True and not os.path.exists(secrets_file_path):
             break
         else:
-            print("Turn on your internet and unplug your USB to continue...")
+            logging.warn("Turn on your internet and unplug your USB to continue...")
             time.sleep(10)
     return True

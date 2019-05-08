@@ -53,10 +53,20 @@ const mainMenuTemplate =[
         }
     },
     {
-        label :'Publication',
+        label :'Génération d\'un diplôme',
         click(){
             mainWindow.loadURL(url.format({
                 pathname: path.join(__dirname, 'form_filler.html'),
+                protocol: 'file:',
+                slashes: true
+            }));
+        }
+    },
+    {
+        label :'Publication',
+        click(){
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'publisher.html'),
                 protocol: 'file:',
                 slashes: true
             }));

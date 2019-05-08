@@ -24,3 +24,11 @@ Nous fournissons avec notre code un docker permettant de faire tourner bitcoin e
 docker build -t certif_regtest .
 docker run -it --network "host" certif_regtest
 ```
+Une fois le docker démarré, nous allons chercher à créer un nouvel utilisateur bitcoin (couple clef publique/clef privée) et lui donner un peu d'argent. Dans le bash du docker :
+```
+bitcoin-cli generate 101
+issuer=$(bitcoin-cli getnewaddress)
+privkey=$(bitcoin-cli dumpprivkey $issuer)
+bitcoin-cli sendtoaddress $issuer 5
+```
+Vous serez à présent l'authentique possesseur de 5 (faux) bitcoin. Je vous indique à copier-coller votre clef privée générée dans un fichier *pk_issuer.txt* (ou n'importe quel nom) que vous déposerez sur une clef USB. Vous allez également devoir modifier le fichier **conf.ini** se trouvant en <!-- FIXME : path to conf.ini -->. Une fois dans ce fichier, vous aller changer la valeur de *usb_name* pourqu'elle pointe vers la clef usb où est stocké votre fichier de clef privée. 
