@@ -25,12 +25,23 @@ class Verify extends Component {
     pdf:null
   } 
   fileHandler = (uploadedFile)=>{
-    uploadedFile = decodeURIComponent(escape(uploadedFile));
-    this.setState({'file':uploadedFile,status:'fileNotVerif'});
-    axios.post('http://localhost:8000/api/certificate_file_pdf', {'diploma' : JSON.parse(this.state.file)})
+    let diploma = null;
+    try{
+		uploadedFile = decodeURIComponent(escape(uploadedFile));
+		diploma=JSON.parse(uploadedFile);
+	}
+	catch(error){
+		alert("Votre fichier n'est pas valide.");
+		return
+	}
+    this.setState({'file':uploadedFile});
+    axios.post('http://localhost:8000/api/certificate_file_pdf', {'diploma' : diploma})
     .then(res => {
-      this.setState({'pdf':res.data});
-    });
+      this.setState({'pdf':res.data, status:'validFile'});
+    }).catch(e => {
+      this.setState({'status':'noFile', 'file':null});
+      alert("Votre fichier n'est pas valide.");
+    })
   }
   verifyFile = () => {
     axios.post('http://localhost:8000/api/verify_certificate', {'diploma' : JSON.parse(this.state.file)})
@@ -40,8 +51,7 @@ class Verify extends Component {
           this.setState({"status":"Ok"});
         }else{
           this.setState({"status":"notOk"});
-        }
-       
+        }     
     }).catch(e => {
         this.setState({status:"notOk"})
     })
