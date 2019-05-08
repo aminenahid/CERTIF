@@ -34,6 +34,7 @@ urlpatterns = [
     url('api/user', get_user_name),
     url('api/add', upload_diploma),
     url('api/wallet', look_for_my_diplomas),
+    url('api/delete_diploma', delete_diploma),
 	#url('api/verify_certificate', verify_certificate),
 
     url('api/certificate_file_pdf', certificate_file_pdf),
