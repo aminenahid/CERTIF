@@ -137,10 +137,9 @@ def certificate_file_pdf(request):
 def delete_diploma(request):
 	student = User.objects.get(pk=request.user.id)
 	diploma_id = request.data.get("id")
-	diploma = Diploma.objects.filter(pk=diploma_id)
+	diploma = Diploma.objects.get(pk=diploma_id)
 	if(diploma.student == student):
 		diploma.delete()
 		return Response({'delete_status': 'ok'}, status=HTTP_200_OK)
 	else:
 		return Response({'delete_status': 'notOk'}, status=HTTP_200_OK)
-	
