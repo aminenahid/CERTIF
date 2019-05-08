@@ -6,6 +6,7 @@ function generateForm(){
     //Access the file and find every possible element
     var file =document.getElementById("filepath").files[0];
     if (file.name.search(/[.]json/)==-1){
+        document.getElementById("form_template").innerHTML="";
         document.getElementById("form_info").innerHTML="Erreur : ce fichier n'est pas un .json";
         return false;
     }
@@ -47,10 +48,19 @@ function loaded(evt) {
     // Obtain the read file data
     fileString = evt.target.result;
     document.getElementById("message").style.display="none";
+    //Is it a correct json ?
+    try {
+        JSON.parse(fileString);
+    } catch (error) {
+        document.getElementById("form_template").innerHTML="";
+        document.getElementById("form_info").innerHTML="Erreur : ce fichier n'est pas un json correct.";
+        return;
+    }
     // We need to find every possible field that is needed.
     var result=fileString.match(/[*].+?[*]/g);
     uniqueIds=Array.from(new Set(result));
     if (uniqueIds.length==0){
+        document.getElementById("form_template").innerHTML="";
         document.getElementById("form_info").innerHTML="Erreur : ce fichier ne contient pas de données à compléter";
         return;
     }

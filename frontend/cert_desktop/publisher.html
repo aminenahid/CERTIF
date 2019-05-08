@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script src="./publish.js"></script>
+     
+    <meta charset="UTF-8">
+    <title>CERT'IF - Publication d'un diplôme</title>
+  </head>
+  <body>
+      <div class="navbar-fixed">
+          <nav>
+              <div class="nav-wrapper red darken-3">
+                  <a class="brand-logo left">PUBLICATION D'UN DIPLÔME</a>
+              </div>
+          </nav>
+      </div>         
+    <div class="row center-align">
+      <div class="col s10 offset-s1 center-align">
+        <div class= "card red lighten-2" id="message">
+          <div class="card-content white-text">
+              <p>Bonjour, merci de donner le chemin d'accès vers le fichier du diplôme à publier</p>
+          </div>
+        </div>
+
+
+      </div>
+      
+        <form>
+          <div class="col s10 offset-s1 left-align">
+            <div class = "file-field input-field">
+                <div class = "btn">
+                   <span>Choisir un fichier</span>
+                   <input type = "file"  name="filepath" id="filepath" onchange="publish()"/>
+                </div>
+
+                <div class = "file-path-wrapper">
+                   <input class = "file-path validate" type = "text"
+                      placeholder = "Aucun fichier choisi" />
+                </div>
+             </div>
+
+             <div class="divider"></div>
+          </div> 
+        </form>  
+    </div>
+    <div class="row" id="form_template">
+    </div>
+    <div id="form_info"></div>
+  </body>
+</html>
