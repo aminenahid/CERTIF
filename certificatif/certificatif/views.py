@@ -49,7 +49,7 @@ def logout(request):
 @api_view(["POST"])
 def signup(request):
 
-	email = request.data.get("email")
+	email = request.data.get("email").lower()
 	username = request.data.get("username")
 	password = request.data.get("password")
 	given_names = request.data.get("given_names")

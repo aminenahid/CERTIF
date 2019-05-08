@@ -43,7 +43,9 @@ class SignIn extends Component {
     handleChange = name => event => {
         this.setState({ [name] : event.target.value });
     };
-    login = ()=> {
+    login = (e)=> {
+        e.preventDefault();
+
         axios.post('http://localhost:8000/api/login', {'username' :this.state.username,'password':this.state.password})
         .then(res => {
 				sessionStorage.setItem('token', res.data.token);
@@ -78,6 +80,7 @@ class SignIn extends Component {
             <Navbar connected={this.state.connected} />
                 <Grid container className="classes.root" justify="center">
                     <Grid item>
+                    <form onSubmit={this.login}>
                         <Paper className={ classes.mainPaper }>
                             <Grid container direction= "row" justify="center" spacing={24}>
                                 <Grid item xs={12}>
@@ -87,11 +90,11 @@ class SignIn extends Component {
                                     <Typography id = "message" color="primary" variant="h6">{this.state.message}</Typography>
                                 </Grid>
                                 <Grid item xs={10}>
-                                <TextField id="username" type="text" label="Identifiant" className={classes.textField}
+                                <TextField required id="username" type="text" label="Identifiant" className={classes.textField}
                                             value={this.state.username} onChange={this.handleChange('username')}/>
                                 </Grid>
                                 <Grid item xs={10}>
-                                <TextField id="password" type="password" label="Mot de passe" className={classes.textField}
+                                <TextField required id="password" type="password" label="Mot de passe" className={classes.textField}
                                             value={this.state.password} onChange={this.handleChange('password')}/>
                                 <br/>
                                 </Grid>
@@ -99,7 +102,7 @@ class SignIn extends Component {
                                     <Button color="primary" onClick={this.redirect}>Mot de passe oublié ?</Button>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Button variant="contained" color="primary" onClick={this.login}>Connexion</Button>
+                                    <Button type="submit" variant="contained" color="primary">Connexion</Button>
                                     <br/><br/>
                                 </Grid>
                                 <Grid item xs={12} style={{ backgroundColor:"#e5e5e5"}}>
@@ -108,7 +111,7 @@ class SignIn extends Component {
                                 </Grid>
                             </Grid>
                         </Paper>
-                        
+                        </form>
                     </Grid>
                 </Grid>
                 {this.state.redirect}

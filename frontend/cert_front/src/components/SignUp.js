@@ -47,7 +47,9 @@ class SignUp extends Component {
     handleChange = name => event => {
         this.setState({ [name] : event.target.value });
     };
-    signup = ()=> {
+    signup = (e)=> {
+        e.preventDefault();
+        
 		if(this.state.password == this.state.confirm_password) {
 			axios.post('http://localhost:8000/api/signup', {'username' :this.state.username,'password':this.state.password,'email' :this.state.email, 'last_name' :this.state.last_name, 'given_names':this.state.given_names })
 			.then(res => {
@@ -77,6 +79,7 @@ class SignUp extends Component {
             <Navbar connected={this.state.connected} />
                 <Grid container className="classes.root" justify="center">
                     <Grid item>
+                    <form onSubmit={this.signup}>
                         <Paper className={ classes.mainPaper }>
                             <Grid container direction= "row" justify="center" spacing={24}>
                                 <Grid item xs={12}>
@@ -95,7 +98,7 @@ class SignUp extends Component {
                                             value={this.state.username} onChange={this.handleChange('username')}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                <TextField required id="email" type="text" label="Adresse mail" className={classes.textField}
+                                <TextField required id="email" type="email" label="Adresse mail" className={classes.textField}
                                             value={this.state.email} onChange={this.handleChange('email')}/>
                                 </Grid>
                                 <Grid item xs={6}>
@@ -110,10 +113,11 @@ class SignUp extends Component {
                                 <Typography id = "message" color="primary" variant="h6">{this.state.message}</Typography>
                                 </Grid>
                                 <Grid item xs={10}>
-                                    <Button variant="contained" color="primary" onClick={this.signup}>Inscription</Button>
+                                    <Button variant="contained" color="primary" type="submit">Inscription</Button>
                                 </Grid>
                             </Grid>
                         </Paper>
+                        </form>
                     </Grid>
                 </Grid>
                 {this.state.redirect}
