@@ -6,7 +6,7 @@ function generateForm(){
     //Access the file and find every possible element
     var file =document.getElementById("filepath").files[0];
     if (file.name.search(/[.]json/)==-1){
-        document.getElementById("form_info").innerHTML="Erreur : ce fichier n'est pas un .json";
+        document.getElementById("form_info").innerHTML="<div class= 'card deep-orange darken-3' > <div class='card-content white-text'> Erreur : ce fichier n'est pas un .json </div></div>";
         return false;
     }
     console.log(file);
@@ -51,7 +51,7 @@ function loaded(evt) {
     var result=fileString.match(/[*].+?[*]/g);
     uniqueIds=Array.from(new Set(result));
     if (uniqueIds.length==0){
-        document.getElementById("form_info").innerHTML="Erreur : ce fichier ne contient pas de données à compléter";
+        document.getElementById("form_info").innerHTML="<div class= 'card deep-orange darken-3' > <div class='card-content white-text'> Erreur : ce fichier ne contient pas de données à compléter </div></div>";
         return;
     }
     uniqueFields=uniqueIds.slice();
@@ -70,7 +70,8 @@ function loaded(evt) {
             zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" id=\""+element+"\"type=\""+getType(text)+"\"> </div>";
         }
     });
-    zoneFormulaire.innerHTML+="<br><div class='col s10 offset-s1 center-align'><div class='file-field input-field'>\
+    zoneFormulaire.innerHTML+="<br>\
+    <div id='form_info2' class='col s10 offset-s1'> </div> <div class='col s10 offset-s1 center-align'><div class='file-field input-field'>\
     <div class='btn'>\
         <span>Dossier d'enregistrement</span>\
         <input id='generateButton' class='btn' type='file' onchange='generateDiplomaJSON();' webkitdirectory directory>\
@@ -115,7 +116,7 @@ function generateDiplomaJSON(){
         ok=ok&&ret;
     }
     if (!ok){
-        document.getElementById("form_info").innerHTML="<p>Le formulaire est incomplet ou mal rempli</p>";
+        document.getElementById("form_info2").innerHTML="<div class= 'card deep-orange darken-3' > <div class='card-content white-text'><p>Le formulaire est incomplet ou mal rempli</p></div></div>";
         return false;
     }
     newFileString=fileString.slice();
@@ -143,10 +144,10 @@ function generateDiplomaJSON(){
     console.log(path);
     fs.writeFile(path, newFileString, function(err) {
         if (err){
-            document.getElementById("form_info").innerHTML=err;
+            document.getElementById("form_info2").innerHTML=err;
             return;
         }
-        document.getElementById("form_info").innerHTML="Fichier écrit en : "+path;
+        document.getElementById("form_info2").innerHTML="<div class= 'card light-green darken-1' > <div class='card-content white-text'>Fichier écrit en : "+path +"</div></div>";
     })
 }
 

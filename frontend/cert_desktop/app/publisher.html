@@ -35,7 +35,7 @@
             <div class = "file-field input-field">
                 <div class = "btn">
                    <span>Choisir un fichier</span>
-                   <input type = "file"  name="filepath" id="filepath" onchange="publish()"/>
+                   <input type = "file"  name="filepath" id="filepath"/>
                 </div>
 
                 <div class = "file-path-wrapper">
@@ -43,6 +43,11 @@
                       placeholder = "Aucun fichier choisi" />
                 </div>
              </div>
+                <div id = "warning"></div>
+                <div class = "btn" id="publisher" onclick="publish()">
+                    <span> Publier le fichier </span>
+                </div>
+                <div id = "usbInfos"></div>
 
              <div class="divider"></div>
           </div> 

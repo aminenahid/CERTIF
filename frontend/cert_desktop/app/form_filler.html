@@ -12,17 +12,6 @@
      
     <meta charset="UTF-8">
     <title>CERT'IF - Saisie d'un diplôme</title>
-    <style>
-    body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-    }
-
-    main {
-      flex: 1 0 auto;
-    }
-  </style>
   </head>
   <body>
       <div class="navbar-fixed">
@@ -31,8 +20,7 @@
                   <a class="brand-logo left">GENERATION D'UN DIPLÔME</a>
               </div>
           </nav>
-      </div>
-      <main>        
+      </div>       
     <div class="row center-align">
       <div class="col s10 offset-s1 center-align">
         <div class= "card red lighten-2" id="message">
@@ -45,6 +33,9 @@
       </div>
       
         <form>
+          <div id="form_info" class="col s10 offset-s1">
+
+          </div>
           <div class="col s10 offset-s1 left-align">
             <div class = "file-field input-field">
                 <div class = "btn">
@@ -60,17 +51,10 @@
 
              <div class="divider"></div>
           </div> 
+          
         </form>  
     </div>
     <div class="row" id="form_template">
     </div>
-  </main> 
-    <footer class="page-footer orange lighten-4">
-      <div class="container">
-        <div class="row">
-          <div style="color:#000000" class="col s10" id="form_info"></div>
-        </div>
-      </div>  
-    </footer>
   </body>
 </html>
