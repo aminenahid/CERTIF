@@ -14,22 +14,17 @@
         <div class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper red darken-3">
-                    <a class="brand-logo left">PUBLICATION D'UN DIPLÔME</a>
+                    <a class="brand-logo left">CONFIGURATION</a>
                 </div>
             </nav>
         </div>         
         <form id="formulaire" action="">
-            Identité :
-            <select id="identity" name="identity">
-                <option value="m">M.</option>
-                <option value="mme">Mme.</option>
-            </select><br>
-            Prénom(s) :
-            <input type="text" id="firstname" name="firstname"><br>
-            Nom(s) : 
-            <input type="text" id="lastname" name="lastname"><br>
-            Date de naissance
-            <input type="date" class="datepicker red darken-3" id="birthday" name="birthday"><br>
+            Chemin vers la clef usb :
+            <input type="text" id="usb_path" name="usb_path"><br>
+            Fichier clef privé : 
+            <input type="text" id="pk" name="pk"><br>
+            dossier contenant les diplomes a publier
+            <input type="date" id="unsigned_folder" name="unsigned_folder"><br>
             Ville de naissance :
             <input type="text" id="bcity" name="bcity"><br>
             Département de naissance :

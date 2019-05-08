@@ -70,7 +70,7 @@ function loaded(evt) {
             zoneFormulaire.innerHTML+="<br> <div class='col s10 offset-s1'> "+text+" : <input name=\""+element+"\" id=\""+element+"\"type=\""+getType(text)+"\"> </div>";
         }
     });
-    zoneFormulaire.innerHTML+="<br><div class='col s12 center-align'><div class='file-field input-field'>\
+    zoneFormulaire.innerHTML+="<br><div class='col s10 offset-s1 center-align'><div class='file-field input-field'>\
     <div class='btn'>\
         <span>Dossier d'enregistrement</span>\
         <input id='generateButton' class='btn' type='file' onchange='generateDiplomaJSON();' webkitdirectory directory>\
