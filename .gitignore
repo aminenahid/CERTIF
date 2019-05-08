@@ -34,3 +34,5 @@ frontend/cert_desktop/npm-debug.log*
 frontend/cert_desktop/yarn-debug*
 frontend/cert_desktop/yarn-error.log*
 frontend/cert_desktop/yarn.lock
+frontend/cert_desktop/build
+frontend/cert_desktop/build/*
