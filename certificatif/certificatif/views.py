@@ -55,6 +55,12 @@ def signup(request):
 	given_names = request.data.get("given_names")
 	last_name= request.data.get("last_name")
 
+	if username is None or password is None or email is None or given_names is None or last_name is None :
+		return Response({'action': False, 'erreur' : "Tous les champs doivent être rensignés"}, status=HTTP_200_OK)
+
+	if username == '' or password == '' or email == '' or given_names == '' or last_name == '' :
+		return Response({'action': False, 'erreur' : "Tous les champs doivent être rensignés"}, status=HTTP_200_OK)
+
 	try:
 		User.objects.get(email=email)
 		return Response({'action': False, 'erreur' : "L'adresse mail est déjà utilisée."}, status=HTTP_200_OK)
@@ -137,10 +143,9 @@ def certificate_file_pdf(request):
 def delete_diploma(request):
 	student = User.objects.get(pk=request.user.id)
 	diploma_id = request.data.get("id")
-	diploma = Diploma.objects.filter(pk=diploma_id)
+	diploma = Diploma.objects.get(pk=diploma_id)
 	if(diploma.student == student):
 		diploma.delete()
 		return Response({'delete_status': 'ok'}, status=HTTP_200_OK)
 	else:
 		return Response({'delete_status': 'notOk'}, status=HTTP_200_OK)
-	

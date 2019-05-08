@@ -135,7 +135,8 @@ class Wallet extends Component {
 	}
 
 	confirmDeleteDiploma() {
-		axios.post('http://localhost:8000/api/delete_diploma', {'id' : this.state.deleteDiploma })
+		axios({'url':'http://localhost:8000/api/delete_diploma', 'method':'post', 'headers': {"Authorization" : "token "+sessionStorage.getItem('token')},
+			'data': {'id' : this.state.deleteDiploma }})
 		.then(res => {
 			let diplomas = this.state.diplomas;
 			for(let i = 0; i < diplomas.length; i++) {
@@ -206,7 +207,7 @@ class Wallet extends Component {
 					  </TableRow>
 					</TableHead>
 					<TableBody>
-					  {this.state.diplomas.length==0 ? <TableCell colSpan={5} style={{ color: "#7c7c7c", textAlign: 'center'}}> Votre liste de diplômes est vide.</TableCell> : <span></span>}
+					  {this.state.diplomas.length==0 ? <TableCell colSpan={6} style={{ color: "#7c7c7c", textAlign: 'center'}}> Votre liste de diplômes est vide.</TableCell> : <span></span>}
 					  {this.state.diplomas.map(diploma => (
 						<TableRow className={classes.row} key={diploma[0]}>
 						  <CustomTableCell component="th" scope="row">{diploma[1].badge.name}</CustomTableCell>
