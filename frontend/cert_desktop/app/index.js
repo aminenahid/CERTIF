@@ -71,6 +71,16 @@ const mainMenuTemplate =[
                 slashes: true
             }));
         }
+    },
+    {
+        label :'Configuration',
+        click(){
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'configure.html'),
+                protocol: 'file:',
+                slashes: true
+            }));
+        }
     }
 ];
 if(process.platform =='darwin'){

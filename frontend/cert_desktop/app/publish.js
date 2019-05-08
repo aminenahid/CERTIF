@@ -5,7 +5,7 @@ function publish() {
     if(file != null){
 
         if (file.name.search(/[.]json/)==-1){
-            document.getElementById("form_info").innerHTML="Erreur : ce fichier n'est pas un .json";
+            document.getElementById("warning").innerHTML="Erreur : ce fichier n'est pas un .json";
             return false;
         }
 
@@ -13,7 +13,8 @@ function publish() {
 
         let path=file.path;
 
-        let unsigned_dir = getPathInConfFile('/home/ubuntu/Desktop/CERTIF/frontend/cert_desktop/conf.ini');
+
+        let unsigned_dir = getPathInConfFile('./conf.ini')
 
         console.log(unsigned_dir);
 
@@ -35,9 +36,9 @@ function publish() {
         command.stderr.on('data', function(data){
             let alpha = data.toString();
             if(alpha == "WARNING - Turn off your internet and plug in your USB to continue...\n"){
-                document.getElementById('usbInfos').innerHTML = "Pour continuer, merci de couper votre connexion Internet puis d'insérer votre support USB contenant votre clé...";
+                document.getElementById('usbInfos').innerHTML = " <div class= 'card deep-orange darken-3' > <div class='card-content white-text'> Pour continuer, merci de couper votre connexion Internet puis d'insérer votre support USB contenant votre clé... </div></div>"
             }else if(alpha == "WARNING - Turn on your internet and unplug your USB to continue...\n"){
-                document.getElementById('usbInfos').innerHTML = "Pour continuer, merci de retirer votre support USB contenant votre clé puis de relancer votre connexion Internet...";
+                document.getElementById('usbInfos').innerHTML = "<div class= 'card light-green darken-1' > <div class='card-content white-text'>  Pour continuer, merci de retirer votre support USB contenant votre clé puis de relancer votre connexion Internet... </div></div>";
             }else {
                 document.getElementById('usbInfos').innerHTML = "";
             }
@@ -48,7 +49,7 @@ function publish() {
             console.log('finished: '+data.toString()); 
         });
     }else{
-        document.getElementById('warning').innerHTML = "Merci de choisir un fichier pour le publier";   
+        document.getElementById('warning').innerHTML = " <div class= 'card orange darken-2' > <div class='card-content white-text'> Merci de choisir un fichier pour le publier </div>  </div>";   
     }
     
 };
@@ -56,5 +57,5 @@ function publish() {
 function getPathInConfFile(file){
     var fs = require('fs');
     var content = fs.readFileSync(file, {"encoding": "utf-8"});
-    return content.match(/unsigned[_]certificates[_]dir[=][a-z_/]*/i)[0].split('=')[1];
+    return content.match(/unsigned[_]certificates[_]dir[=][a-z0-9_/]*/i)[0].split('=')[1];
 }
