@@ -129,7 +129,8 @@ Dans le cas où cette base n'est pas peuplé, voici les champs à remplir :
 + Expiry Year : 2020
 + Diploma type : Diplome d'ingenieur - grade de Master
 
-**Remarque 1** : Il est tout à fait possible de mettre une autre clef publique pour l'université, par exemple celle générée auparavant : $issuer. Il faudra cependant veiller à ce qu'elle corresponde bien aux clefs publiques/privées utilisées pour l'émission d'un diplôme via *frontend/cert_desktop*0
+**Remarque 1** : Il est tout à fait possible de mettre une autre clef publique pour l'université, par exemple celle générée auparavant : $issuer. Il faudra cependant veiller à ce qu'elle corresponde bien aux clefs publiques/privées utilisées pour l'émission d'un diplôme via *frontend/cert_desktop*
+
 **Remarque 2**: Il est important de copier au caractère près les champs _Name_, _Public key_ et _Diploma Type_ au caractère près, sans quoi la vérification ne fonctionnera pas.
 
 ## Remarques générales
