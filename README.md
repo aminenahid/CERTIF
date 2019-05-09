@@ -26,6 +26,8 @@ L'ensemble de l'installation est écrite de sorte à tester le système sur une 
 Il vous faudra installer dans un premier temps l'ensemble des dépendances python :
 ```bash
 pip install -r requirements.txt
+cd cert-issuer && pip install .
+cd ../cert-tools && pip install .
 ```
 
 Assurez-vous également de faire tourner le système avec python 3.6 ou plus ! Le système peut tout à fait fonctionner en 3.5, mais la génération de pdf ne fonctionnera pas, et par conséquent la vérification de diplôme.
@@ -63,18 +65,33 @@ Rendez-vous dans le fichier *frontend/cert_desktop/conf.ini* et modifiez-le ains
 > #Ne modifier que ces deux chemins
 > usb_name=/chemin/vers/clef_usb
 > key_file=pk_issuer.txt
-
+>
 > unsigned_certificates_dir=./issuer/unsigned_certificates
 > blockchain_certificates_dir=./issue/blockchain_certificates
 > work_dir=./issue/work
-
+>
 > #no_safe_mode
 
 Vous écrirez dans un fichier intitulé *pk_issuer.txt* situé sur une clef usb votre clef privée ```$privkey```.
 
 ### Postgres
 
-Vous aurez besoin d'une base de donnée postgres en localhost (ou ailleurs si ça vous plaît) intitulé _certificatif_. 
+Vous aurez besoin d'une base de donnée postgres en localhost (ou ailleurs si ça vous plaît) intitulée _certificatif_.
+Pensez en conséquence à modifier le fichier *certificatif/certificatif/settings.py* afin d'y modifier les lignes suivantes :
+
+># Database
+># https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+>
+>DATABASES = {
+>    'default': {
+>        'ENGINE': 'django.db.backends.postgresql',
+>        'NAME': 'certificatif',
+>        'USER': 'nom_utilisateur_postgres',
+>        'PASSWORD': 'mot_de_passe_utilisateur',
+>        'HOST': '127.0.0.1',
+>        'PORT': '5433',
+>    }
+>}
 
 ### Démarrer les applications
 
@@ -93,3 +110,7 @@ Il faut démarrer les 3 applications : client web, back web et client lourd. Voi
 Lors de la publication de diplome part *cert_desktop*, les diplômes signés se trouvent dans le dossier *frontend/cert_desktop/issue/blockchain_certificates*, à moins que vous ne changiez ce chemin dans *frontend/cert_desktop/conf.ini*.
 
 Vous aurez besoin d'un template de diplôme pour en générer avec *frontend/cert_desktop*. Ce template se trouve dans le dossier *diplomes* et est intitulé *template_insa.json*
+
+## Liens pratiques
+
+La documentation sur cert-issuer : [repo officiel](https://github.com/blockchain-certificates/cert-issuer)
