@@ -2,6 +2,9 @@ var nb = 1;
 var ind = true;
 
 function publish() {
+    
+    document.getElementById('filepath').className = "btn disabled";
+    document.getElementById('publisher').className = "btn disabled";
 
     var file =document.getElementById("filepath").files[0];
 
@@ -72,6 +75,8 @@ function publish() {
                     console.log(stdout);
                     console.log(stderr);
                 });
+            document.getElementById('filepath').className = "btn active";
+            document.getElementById('publisher').className = "btn active";
         });
     }else{
         document.getElementById('warning').innerHTML = " <div class= 'card orange darken-2' > <div class='card-content white-text'> Merci de choisir un fichier pour le publier </div>  </div>";   
@@ -82,5 +87,5 @@ function publish() {
 function getPathInConfFile(file){
     var fs = require('fs');
     var content = fs.readFileSync(file, {"encoding": "utf-8"});
-    return content.match(/unsigned[_]certificates[_]dir[=][a-z0-9_/]*/i)[0].split('=')[1];
+    return content.match(/unsigned[_]certificates[_]dir[=][a-z0-9_/.]*/i)[0].split('=')[1];
 }

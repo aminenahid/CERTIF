@@ -1,159 +1,95 @@
-# CERTIF
-Project of creation of a academic credientials authentification solution
+#CERT'IF
 
-## Installation
+Projet libre de vérification de diplômes académiques basé sur blockcert.
+Ce projet est constitué de deux parties :
++ *Emission de diplôme* : cette application permet de générer un diplômr à partir d'un template, puis de l'émettre sur la blockchain.
++ Vérification de diplôme : cette application, quant à elle, permet à n'importe quel individu de vérifier un diplôme quelconque sur la blockchain.
 
-### Démarrage du front
+*Remarque* : Nous intégrons dans la partie vérification un service de stockage des diplômes accessible aux étudiants. Cette solution est/sera payante, mais reste non nécessaire pour émettre et vérifier un diplôme.
 
-Aller dans le dossier *frontend/cert_front* et exécuter les commandes suivantes :
-```
-yarn install
-yarn start
-```
 
-Si tout se passe bien, vous pourrez accéder à la page via le lien *http://localhost:3000*.
+## Contenu du repo
 
-### Démarrage de postgres
+3 dossiers indépendants se trouvent dans ce repo et possèdent leur rôle :
++ *frontend/cert_front* : application web front pouvant vérifier un diplôme, ainsi que gérer le compte d'un étudiant (gestion de ses diplômes).
++ *certificatif* : back Django de l'application web *frontend/cert_front*.
++ *frontend/cert_desktop* client lourd servant à générer des diplômes à partir d'un template, ainsi que les émettre sur la blockchain.
 
-Afin que le back puisse fonctionner, il est nécessaire de faire tourner une base de donnée postgres que nous peuplerons à la suite.
+## Installer l'environnement
 
-```
-docker run --name pg-docker --env POSTGRES_PASSWORD=root --env POSTGRES_USER=postgres --env POSTGRES_DB=certificatif -p 5432:5432 -d postgres
-```
+L'ensemble de l'installation est écrite de sorte à tester le système sur une blockchain de test.
 
-**Remarque** : il est possible que docker refuse de démarrer en raison d'un _Daemonconflit_. L'erreur vous indiquera l'identifiant _id_ du docker bloquant. Vous n'aurez qu'à exécuter ```docker stop <id> && docker rm <id>``` pour corriger cela. Vous pouvez aussi exécuter ```docker stop <id> && docker rm $(docker ps -aq)``` afin de réellement supprimer tout vos docker tournant.
+**Remarque** : Le système, dans sa version actuelle ne peut tourner que sur un système linux. (La partie cert_desktop, du moins).
 
-### Démarrage du back django & bitcoin
+### Dépendances Python
 
-Cette fois, ramenez-vous à la racine du projet et exécuter les commandes suivantes :
-
-```
-docker build -t <le-nom-de-votre-docker> .
-docker run --network host -p 8000:8000 -p 5432:5432 -it <le-nom-de-votre-docker>
+Il vous faudra installer dans un premier temps l'ensemble des dépendances python :
+```bash
+pip install -r requirements.txt
 ```
 
-**Remarque** : docker vous signalera probablement que le mapping des ports est inutile en raison de l'option _--network host_, mais ça ne fait pas de mal.
+Assurez-vous également de faire tourner le système avec python 3.6 ou plus ! Le système peut tout à fait fonctionner en 3.5, mais la génération de pdf ne fonctionnera pas, et par conséquent la vérification de diplôme.
 
-L'ensemble des commandes qui suivent s'exécuteront dans le docker django & bitcoin.
+### Bitcoin
 
-#### Avoir des sous
+1. _Démarrer bitcoin_
 
-Comme il faut un blockchain, et des sous, pour faire tourner l'application, nous allons créer tout cela :
-
+Nous fournissons avec notre code un docker permettant de faire tourner bitcoin en mode regtest (il s'agit d'une chaîne de blocs virtuelle où l'on possède un contrôle intégral). Nous allons le démarrer de la manière suivante :
+```bash
+docker build -t certif_regtest .
+docker run -it --network "host" certif_regtest
 ```
+
+2. _Créer une identité_
+
+Une fois le docker démarré, nous allons chercher à créer un nouvel utilisateur bitcoin (couple clef publique/clef privée) et lui donner un peu d'argent. Dans le bash du docker :
+```bash
 bitcoin-cli generate 101
-issuer=`bitcoin-cli getnewaddress`
-privKey=`bitcoin-cli dumpprivkey $issuer`
+issuer=$(bitcoin-cli getnewaddress)
+privkey=$(bitcoin-cli dumpprivkey $issuer)
 bitcoin-cli sendtoaddress $issuer 5
-echo -e "$issuer\n$privKey"
 ```
+Vous serez à présent l'authentique possesseur de 5 (faux) bitcoin.
 
-La blockchain test est maintenant générée et l'utilisateur _issuer_ possède 5 bitcoins. À la fin de ce script sont affichés deux éléménts _issuer_ et _privKey_. Notez-les bien car il s'agit du couple clef publique/clef privée qui correspondront plus tard à un émetteur sur la blockchain.
+3. _Paramétrer l'émetter bitcoin_
 
-Nous allons également générer un couple clef publique / clef privée pour l'étudiant qui se fera diplômé.
-```
-pubEtudiant=`bitcoin-cli getnewaddress`
-privEtudiant=`bitcoin-cli dumpprivkey $pubEtudiant`
-echo -e "$pubEtudiant\n$privEtudiant"
-```
+Rendez-vous dans le fichier *frontend/cert_desktop/conf.ini* et modifiez-le ainsi :
 
-La clef privée de l'étudiant n'est pas forcément nécessaire pour la suite cela dit.
+> issuing_address=<votre clef publique ($issuer) ici>
+> 
+> chain=bitcoin_regtest
+> bitcoind
+> 
+> #Ne modifier que ces deux chemins
+> usb_name=/chemin/vers/clef_usb
+> key_file=pk_issuer.txt
 
-**Remarque** : vous pouvez vérifier si vous êtes sur une blockchain test (regtest) ou non (mainnet) en regardant le premier caractère des clefs publiques. S'ils s'agit d'un 'm' ou un 'n', alors vous êtes en test. S'il s'agit d'un '1', alors vous allez réellement sur bitcoin.
+> unsigned_certificates_dir=./issuer/unsigned_certificates
+> blockchain_certificates_dir=./issue/blockchain_certificates
+> work_dir=./issue/work
 
-#### Démarrer django
+> #no_safe_mode
 
-Nous cherchons ici à faire démarrer le serveur django.
+Vous écrirez dans un fichier intitulé *pk_issuer.txt* situé sur une clef usb votre clef privée ```$privkey```.
 
-```
-python3 /certificatif/manage.py makemigrations certificatif
-python3 /certificatif/manage.py migrate
-python3 /certificatif/manage.py createsuperuser
-python3 /certificatif/manage.py runserver
-```
+### Postgres
 
-La commande createsuperuser vous permettra de créer un administrateur pour la base de donnée postgres. Gardez bien en mémoire le username et le password attribué (prenez qqch de simple). Pour la clef publique de l'administrateur, 123 suffit. Cela n'aura pas d'importance plus tard.
+Vous aurez besoin d'une base de donnée postgres en localhost (ou ailleurs si ça vous plaît) intitulé _certificatif_. 
 
-## Configuration
+### Démarrer les applications
 
-Maintenant que l'ensemble des systèmes ont été démarrés, vous allez pouvoir les configurer (youpi !).
+Il faut démarrer les 3 applications : client web, back web et client lourd. Voici les commandes respectives :
 
-### Peupler la base de donnée postgres
-Afin de vous connecter à la base postgres, saisissez l'addresse _http://localhost:8000/admin_. Vous devez ensuite vous connecter en tant qu'admin (les identifiants créés auparavant).
-Une fois connecté, vous allez ajouter une université et un étudiant.
-#### Une université
- Vous lui attribuerez comme mot de passe le même que celui de l'admin (copier-coller du hash du mdp du user admin). Complétez les données ainsi :
-+ _Email_ : eric.maurincomme@insa-lyon.fr (ce que vous voulez)
-+ _Username_ : insalyon (ce que vous voulez)
-+ _PublicKey_ : La clef publique que vous a généré bitcoin auparavant : ``` echo $issuer```
-+ _Name_ : Institut National des Sciences Appliquées de Lyon (casse sensible, à ne surtout pas changer)
-+ _Short name_ : ce-que-vous-voulez (INSA Lyon)
-Cochez ensuite la case _Is authorised_ et entrez une _Autorisation expiry date_ dans un avenir quelconque.
++ *client web (frontend/cert_front)*
+	+ ```yarn install && yarn start```
+	+ L'adresse pour vous connecter au client est localhost:3000
++ *back web (certificatif)*
+	+ ```python manage.py makemigrations certificatif && python manage.py migrate && python manage.py runserver```
++ *client lourd (frontend/cert_desktop)*
+	+ ```yarn install && yarn start```
 
-#### Un étudiant
-Complétez l'étudiant ainsi :
-+ _Mot de passe_ : même manipulation que pour l'université : hash du mot de passe de l'admin.
-+ _Email_ : toto@insa-lyon.fr (ou ce que vous voulez)
-+ _Username_ : toto
-+ _Public key_ : La clef publique que vous a généré bitcoin auparavant ```echo $pubEtudiant```
-+ _Given names_ : toto (ce que vous voulez)
-+ _Last name_ : zero (ce que vous voulez)
+## Remarques générales
 
-Ouf, ça y est ! La base est complétée !
+Lors de la publication de diplome part *cert_desktop*, les diplômes signés se trouvent dans le dossier *frontend/cert_desktop/issue/blockchain_certificates*, à moins que vous ne changiez ce chemin dans *frontend/cert_desktop/conf.ini*.
 
-### Générer le diplôme à émettre.
-
-Vous aurez besoin de cert-tools pour créer ce diplôme, si vous ne l'avez pas, suivi le point suivant, sinon sautez-le.
-
-#### Installation de cert-tools
-
-Entrez tout simplement
-```
-git clone https://github.com/blockchain-certificates/cert-tools.git && cd cert-tools
-pip install .
-```
-Pour plus de détail, allez voir sur le [repo officiel](https://github.com/blockchain-certificates/cert-tools.git)
-
-#### Création de votre diplôme
-
-Exécutez la commande suivante :
-```
-create-certificate-template -c chemin/vers/fichier/configuration_tools_insa.ini
-```
-
-Ensuite, allez dans le dossier *cert-tools/sample_data/rosters* et ouvrez le fichier *roster_testnet.csv*. Vous allez y ajouter une ligne comprenant les informations de l'étudiant à diplômer. Voici comment :
-+ _name_ : remplissez à la suite le(s) prénom(s) et nom saisis auparavant (toto zero)
-+ _pubkey_ : saisissez *ecdsa-koblitz-pubkey:**votre-clef-publique-d'étudiant***. Par exemple : ecdsa-koblitz-pubkey:myyHx2f4Ag3a6xTp5ucfkkvVRGwWeeVtQD
-+ _identity_ : Inscrivez ici le mail de l'étudiant. (toto@insa-lyon.fr)
-
-Si cela vous chante, vous pouvez supprimer les autres lignes d'étudiants.
-
-Vous pouvez maintenant exécuter :
-```
-instantiate-certificate-batch -c chemin/vers/fichier/configuration_tools_insa.ini
-```
-La commande vous indiquera dans quel dossier pêcher votre diplôme tout frais. cert-tools génére autant de diplôme que de ligne de csv, il faudra donc ouvrir éventuellement ouvrir les fichiers afin de trouver lequel vous concerne. Appelons ce fichier **diplome.json**
-
-## Manipulation
-
-1. Publication
-
-Maintenant que tout est bon, c'est parti ! Connectez-vous en tant qu'université et allez sur *Publier*. Nous allons émettre sur la blockchain le fichier **diplome.json** et fournir comme clef privée celle de l'université ```echo $privKey```.
-
-2. Récupérer le fichier publier
-
-Si tout s'est bien passé, vous devriez avoir dans le docker django le message suivant (ou semblable)
-
-> INFO - Your Blockchain Certificates are in /blockcert/blockchain_certificates
-> [04/May/2019 08:16:26] "POST /api/issue HTTP/1.1" 200 120439
-
-La page web devrait également afficher
-> Votre diplome a bien été enregistré.
-
-Interrompez l'exécution de django (ctrl+C) pour récupérer la main dans le docker. À l'aide de la commande ```cat /blockcert/blockchain_certificates/toUpload.json```, afficher le fichier publié sur la blockchain et copier-coller le dans un fichier **diplome_publie.json** (hors docker bien sûr).
-
-N'oubliez surtout pas de relance django ensuite : ```python3 /certificatif/manage.py runserver``` !
-
-3. Vérifier le diplôme publié
-
-Cette fois, allez sur la page *Verifier un diplôme* et glissez le fichier **diplome_publie.json**. Lancez la vérification, le résultat sera valide !
+Vous aurez besoin d'un template de diplôme pour en générer avec *frontend/cert_desktop*. Ce template se trouve dans le dossier *diplomes* et est intitulé *template_insa.json*

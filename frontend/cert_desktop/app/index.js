@@ -45,7 +45,11 @@ const mainMenuTemplate =[
     {
         label :'Accueil',
         click(){
-            mainWindow.toggleDevTools();
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'index.html'),
+                protocol: 'file:',
+                slashes: true
+            }));
         }
         
     },
@@ -64,6 +68,16 @@ const mainMenuTemplate =[
         click(){
             mainWindow.loadURL(url.format({
                 pathname: path.join(__dirname, 'publisher.html'),
+                protocol: 'file:',
+                slashes: true
+            }));
+        }
+    },
+    {
+        label :'Configuration',
+        click(){
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'configuration.html'),
                 protocol: 'file:',
                 slashes: true
             }));
