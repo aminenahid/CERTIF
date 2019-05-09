@@ -45,13 +45,25 @@ docker run -it --network "host" certif_regtest
 2. _Créer une identité_
 
 Une fois le docker démarré, nous allons chercher à créer un nouvel utilisateur bitcoin (couple clef publique/clef privée) et lui donner un peu d'argent. Dans le bash du docker :
+
 ```bash
 bitcoin-cli generate 101
+issuer=mtT7JjAKq3eNJ2LxA5DjMTaPRJBYjbFLaB
+bitcoin-cli importaddress $issuer
+bitcoin-cli sendtoaddress $issuer 5
+```
+
+Vous serez à présent l'authentique possesseur de 5 (faux) bitcoin.
+
+**Remarque 1** : vous pouvez vérifier si vous êtes sur une blockchain test (regtest) ou non (mainnet) en regardant le premier caractère des clefs publiques. S'ils s'agit d'un 'm' ou un 'n', alors vous êtes en test. S'il s'agit d'un '1', alors vous allez réellement sur bitcoin.
+
+**Remarque 2** : Afin que la démo tourne, nous vous fournissons déjà un couple clef publique/clef privée. (La clef privée se trouve dans *pk_issuer.txt*). Si jamais vous choisissez de créer vos propres identifiant, exécutez les commandes suivantes. Vous aurez en revanche à modifier plus tard certains paramètres de la base de données.
+```bash
 issuer=$(bitcoin-cli getnewaddress)
 privkey=$(bitcoin-cli dumpprivkey $issuer)
 bitcoin-cli sendtoaddress $issuer 5
 ```
-Vous serez à présent l'authentique possesseur de 5 (faux) bitcoin.
+
 
 3. _Paramétrer l'émetter bitcoin_
 
@@ -72,26 +84,18 @@ Rendez-vous dans le fichier *frontend/cert_desktop/conf.ini* et modifiez-le ains
 >
 > #no_safe_mode
 
-Vous écrirez dans un fichier intitulé *pk_issuer.txt* situé sur une clef usb votre clef privée ```$privkey```.
+Vous devrez copier-coller le fichier *pk_issuer.txt* dans une clef usb.
+Si vous avez choisi de générer vos identifiants bitcoin, vous écrirez dans un fichier intitulé *pk_issuer.txt* situé sur une clef usb votre clef privée ```$privkey```.
 
 ### Postgres
 
-Vous aurez besoin d'une base de donnée postgres en localhost (ou ailleurs si ça vous plaît) intitulée _certificatif_.
-Pensez en conséquence à modifier le fichier *certificatif/certificatif/settings.py* afin d'y modifier les lignes suivantes :
+Vous aurez besoin d'une base de donnée postgres en localhost (ou ailleurs si ça vous plaît) intitulée _certificatif_. Nous fournissons pour cela un docker contenant une base de donnée toute prête :
+```bash
+docker run --network="host" -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root hex4404/postgres
+```
+**(Commande à vérifier)**
 
-># Database
-># https://docs.djangoproject.com/en/2.0/ref/settings/#databases
->
->DATABASES = {
->    'default': {
->        'ENGINE': 'django.db.backends.postgresql',
->        'NAME': 'certificatif',
->        'USER': 'nom_utilisateur_postgres',
->        'PASSWORD': 'mot_de_passe_utilisateur',
->        'HOST': '127.0.0.1',
->        'PORT': '5433',
->    }
->}
+Dans le cadre où vous avez souhaité créer vos identifiants bitcoin, vous devrez vous connecter à localhost:8000/admin pour accéder à l'administration de la base de donnée. Vous modifierez l'objet University afin d'y intégrer votre nouvelle clef publique $issuer.
 
 ### Démarrer les applications
 
@@ -101,7 +105,7 @@ Il faut démarrer les 3 applications : client web, back web et client lourd. Voi
 	+ ```yarn install && yarn start```
 	+ L'adresse pour vous connecter au client est localhost:3000
 + *back web (certificatif)*
-	+ ```python manage.py makemigrations certificatif && python manage.py migrate && python manage.py runserver```
+	+ ```python manage.py runserver```
 + *client lourd (frontend/cert_desktop)*
 	+ ```yarn install && yarn start```
 
