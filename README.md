@@ -1,4 +1,4 @@
-#CERT'IF
+# CERT'IF
 
 Projet libre de vérification de diplômes académiques basé sur blockcert.
 Ce projet est constitué de deux parties :
