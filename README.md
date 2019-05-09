@@ -93,9 +93,6 @@ Vous aurez besoin d'une base de donnée postgres en localhost (ou ailleurs si ç
 ```bash
 docker run --network="host" -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root hex4404/postgres
 ```
-**(Commande à vérifier)**
-
-Dans le cadre où vous avez souhaité créer vos identifiants bitcoin, vous devrez vous connecter à localhost:8000/admin pour accéder à l'administration de la base de donnée. Vous modifierez l'objet University afin d'y intégrer votre nouvelle clef publique $issuer.
 
 ### Démarrer les applications
 
@@ -105,9 +102,35 @@ Il faut démarrer les 3 applications : client web, back web et client lourd. Voi
 	+ ```yarn install && yarn start```
 	+ L'adresse pour vous connecter au client est localhost:3000
 + *back web (certificatif)*
-	+ ```python manage.py runserver```
+	+ ```python manage.py makemigrations certificatif && python manage.py migrate && python manage.py runserver```
 + *client lourd (frontend/cert_desktop)*
 	+ ```yarn install && yarn start```
+
+### Peupler la base de donnée
+
+Selon l'état du docker, il est possible que la base postgres ne soit pas peuplée. Afin d'y accéder, il va falloir créer un super utilisateur administrateur de django.
+```bash
+python manage.py createsuperuser
+```
+Ensuite, il faudra vous connecter à l'adresse : localhost:8000/admin grâce à vos identifiants super utilisateur. Si la base est remplie, vous devriez trouver un objetU Universitys et un objet Authorisations. Laissez les tels quels.
+Dans le cas où cette base n'est pas peuplé, voici les champs à remplir :
+
+1. Nouvelle university
+
++ Name : Institut National des Sciences Appliquées de Lyon
++ Short Name : INSA Lyon
++ Public key : mtT7JjAKq3eNJ2LxA5DjMTaPRJBYjbFLaB
+
+2. Nouvelle authorisation
+
++ University : University object (1)
++ Law : L. 642-1, L. 642-12, D. 642-1, R. 642-10
++ Authorisation Year : 2019
++ Expiry Year : 2020
++ Diploma type : Diplome d'ingenieur - grade de Master
+
+**Remarque 1** : Il est tout à fait possible de mettre une autre clef publique pour l'université, par exemple celle générée auparavant : $issuer. Il faudra cependant veiller à ce qu'elle corresponde bien aux clefs publiques/privées utilisées pour l'émission d'un diplôme via *frontend/cert_desktop*0
+**Remarque 2**: Il est important de copier au caractère près les champs _Name_, _Public key_ et _Diploma Type_ au caractère près, sans quoi la vérification ne fonctionnera pas.
 
 ## Remarques générales
 
